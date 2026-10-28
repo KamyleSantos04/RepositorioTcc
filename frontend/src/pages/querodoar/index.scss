@@ -1,0 +1,18 @@
+.verde{
+    background-color: #173B29;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    height: 99vh;
+
+    .icons{
+        margin-top: 25px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .sair{
+        margin-top: 100px;
+    }
+}

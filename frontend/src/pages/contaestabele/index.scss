@@ -1,0 +1,157 @@
+
+.cadastro-estabelecimento {
+  min-height: 100vh;
+  padding: 50px 20px;
+  background-color: #f5f0e8;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+
+  .conteudo-estabelecimento {
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #fffdf8;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  h1 {
+    color: #315c42;
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: #6b6b60;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+
+  h2 {
+    color: #315c42;
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5d8c6;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    color: #3f493f;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #d8d1c5;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      border-color: #477653;
+      box-shadow: 0 0 0 3px rgba(71, 118, 83, 0.12);
+    }
+
+    &::placeholder {
+      color: #aaa69d;
+    }
+  }
+
+  select {
+    cursor: pointer;
+  }
+
+  // Checkbox dos termos
+  .termo-estabelecimento {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 25px;
+    font-weight: normal;
+    line-height: 1.5;
+    cursor: pointer;
+
+    input[type='checkbox'] {
+      width: 17px;
+      height: 17px;
+      min-width: 17px;
+      margin-top: 2px;
+      accent-color: #315c42;
+      cursor: pointer;
+    }
+  }
+
+  // Botão de cadastro
+  button {
+    margin-top: 30px;
+    padding: 15px;
+    border: none;
+    border-radius: 9px;
+    background-color: #315c42;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+
+    &:hover {
+      background-color: #244631;
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  // Mensagem de sucesso
+  .mensagem-sucesso {
+    padding: 14px;
+    border-radius: 8px;
+    background-color: #e4f3e7;
+    color: #23723d;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 0;
+  }
+}
+
+// Responsividade para celulares
+@media (max-width: 600px) {
+  .cadastro-estabelecimento {
+    padding: 20px 12px;
+
+    .conteudo-estabelecimento {
+      padding: 25px 18px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+  }
+}
