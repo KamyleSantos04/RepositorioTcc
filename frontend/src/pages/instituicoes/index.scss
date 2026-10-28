@@ -1,0 +1,164 @@
+.institutions-page {
+    min-height: 100vh;
+    background-color: #f8faf8;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+/* CABEÇALHO */
+
+.institution-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 6%;
+    background-color: #EBE3D4;
+
+    .institution-brand {
+        display: flex;
+        align-items: center;
+
+        img {
+            width: 155px;
+            height: auto;
+            object-fit: contain;
+        }
+    }
+
+    .institution-back-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        border: 1px solid #999999;
+        border-radius: 8px;
+        color: #173B29;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: bold;
+        transition: 0.3s;
+
+        &:hover {
+            background-color: #27845b;
+            color: #fff;
+        }
+    }
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+.institution-results {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 45px 25px;
+
+    h1 {
+        margin-bottom: 12px;
+        color: #246b4a;
+        font-size: 32px;
+    }
+
+    > p {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .institution-count {
+        margin: 22px 0;
+        color: #777;
+        font-size: 14px;
+    }
+}
+
+/* CAMPO DE BUSCA */
+
+.institution-search {
+    width: 100%;
+    max-width: 650px;
+    margin-top: 28px;
+
+    input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px 18px;
+        border: 1px solid #d6dfd8;
+        border-radius: 10px;
+        background-color: #fff;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus {
+            border-color: #27845b;
+            box-shadow: 0 0 0 3px rgba(39, 132, 91, 0.12);
+        }
+    }
+}
+
+/* CARDS DAS INSTITUIÇÕES */
+
+.institution-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 25px;
+}
+
+.institution-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    background-color: #fff;
+    border: 1px solid #e4ebe5;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+}
+
+/* CABEÇALHO DOS CARDS */
+
+.institution-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+
+    h3 {
+        margin: 0 0 8px;
+        color: #285b42;
+        font-size: 18px;
+        line-height: 1.4;
+    }
+}
+
+/* ÍCONE DA INSTITUIÇÃO */
+
+.institution-card-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 62px;
+    height: 62px;
+    overflow: hidden;
+    background-color: #edf6ef;
+    border-radius: 12px;
+
+    img {
+        width: 100%;
+    }
+
+    .institution-donate-button {
+        color: #fff;
+        margin-top: 20px;
+    }
+    
+
+
+}

@@ -11,6 +11,7 @@ import Instituicoes from './pages/instituicoes/index';
 import CadastroInstituicao from './pages/contaong/index';
 import Estabelecimento from './pages/contaestabele/index';
 import QueroDoar from './pages/querodoar';
+import Dashboard from './pages/dashestabelecimento';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -28,6 +29,7 @@ root.render(
         <Route path="/CadastroInstituicao" element={<CadastroInstituicao />} />
         <Route path="/Estabelecimento" element={<Estabelecimento />}/>
         <Route path='/QueroDoar' element={<QueroDoar />} />
+        <Route path='/DashEstabelecimento' element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
