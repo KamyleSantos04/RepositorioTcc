@@ -6,9 +6,46 @@ export default function Estabelecimento() {
   const [mensagem, setMensagem] = useState('');
   const [outroTipo, setOutroTipo] = useState(false);
 
-  function cadastrar(event) {
+  async function cadastrar(event) {
     event.preventDefault();
-    setMensagem('Cadastro realizado com sucesso!');
+
+    const formulario = event.currentTarget;
+    const formularioDados = new FormData(formulario);
+
+    const dados = Object.fromEntries(formularioDados);
+
+    if (dados.senha !== dados.confirmarSenha) {
+      setMensagem('As senhas não são iguais!');
+      return;
+    }
+
+    delete dados.confirmarSenha;
+
+    try {
+      const resposta = await fetch(
+        'http://localhost:3001/api/auth/cadastro/estabelecimento',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dados)
+        }
+      );
+
+      const resultado = await resposta.json();
+
+      if (!resposta.ok) {
+        throw new Error(resultado.erro);
+      }
+
+      setMensagem('Cadastro realizado com sucesso!');
+      formulario.reset();
+      setOutroTipo(false);
+
+    } catch (erro) {
+      setMensagem(erro.message || 'Erro ao realizar cadastro.');
+    }
   }
 
   return (
@@ -28,12 +65,14 @@ export default function Estabelecimento() {
           <label>Nome do estabelecimento</label>
           <input
             type="text"
+            name="nome"
             placeholder="Digite o nome do estabelecimento"
             required
           />
 
           <label>Tipo de estabelecimento</label>
           <select
+            name="tipoEstabelecimento"
             required
             defaultValue=""
             onChange={(e) => {
@@ -56,6 +95,7 @@ export default function Estabelecimento() {
               <label>Qual é o tipo de estabelecimento?</label>
               <input
                 type="text"
+                name="outroTipo"
                 placeholder="Digite o tipo de estabelecimento"
                 required
               />
@@ -65,6 +105,7 @@ export default function Estabelecimento() {
           <label>CNPJ</label>
           <input
             type="text"
+            name="cnpj"
             placeholder="00.000.000/0000-00"
             required
           />
@@ -74,6 +115,7 @@ export default function Estabelecimento() {
           <label>Telefone</label>
           <input
             type="tel"
+            name="telefone"
             placeholder="(00) 00000-0000"
             required
           />
@@ -81,6 +123,7 @@ export default function Estabelecimento() {
           <label>E-mail</label>
           <input
             type="email"
+            name="email"
             placeholder="estabelecimento@email.com"
             required
           />
@@ -90,6 +133,7 @@ export default function Estabelecimento() {
           <label>CEP</label>
           <input
             type="text"
+            name="cep"
             placeholder="00000-000"
             required
           />
@@ -97,6 +141,7 @@ export default function Estabelecimento() {
           <label>Rua</label>
           <input
             type="text"
+            name="rua"
             placeholder="Nome da rua"
             required
           />
@@ -104,6 +149,7 @@ export default function Estabelecimento() {
           <label>Número</label>
           <input
             type="text"
+            name="numero"
             placeholder="Número do estabelecimento"
             required
           />
@@ -111,12 +157,14 @@ export default function Estabelecimento() {
           <label>Complemento</label>
           <input
             type="text"
+            name="complemento"
             placeholder="Complemento (opcional)"
           />
 
           <label>Bairro</label>
           <input
             type="text"
+            name="bairro"
             placeholder="Nome do bairro"
             required
           />
@@ -124,6 +172,7 @@ export default function Estabelecimento() {
           <label>Cidade</label>
           <input
             type="text"
+            name="cidade"
             placeholder="Nome da cidade"
             required
           />
@@ -131,6 +180,7 @@ export default function Estabelecimento() {
           <label>Estado</label>
           <input
             type="text"
+            name="estado"
             placeholder="Ex.: SP"
             required
           />
@@ -140,6 +190,7 @@ export default function Estabelecimento() {
           <label>Nome completo do responsável</label>
           <input
             type="text"
+            name="responsavel"
             placeholder="Nome completo"
             required
           />
@@ -147,6 +198,7 @@ export default function Estabelecimento() {
           <label>CPF do responsável</label>
           <input
             type="text"
+            name="cpfResponsavel"
             placeholder="000.000.000-00"
             required
           />
@@ -154,6 +206,7 @@ export default function Estabelecimento() {
           <label>Cargo</label>
           <input
             type="text"
+            name="cargoResponsavel"
             placeholder="Ex.: gerente, proprietário"
             required
           />
@@ -163,6 +216,7 @@ export default function Estabelecimento() {
           <label>Senha</label>
           <input
             type="password"
+            name="senha"
             placeholder="Crie uma senha"
             minLength="6"
             required
@@ -171,6 +225,7 @@ export default function Estabelecimento() {
           <label>Confirmar senha</label>
           <input
             type="password"
+            name="confirmarSenha"
             placeholder="Digite a senha novamente"
             minLength="6"
             required

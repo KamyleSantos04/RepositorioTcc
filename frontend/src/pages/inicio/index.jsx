@@ -12,7 +12,7 @@ export default function Inicio() {
       <Link to="/ComoFunciona">Como funciona</Link>
       <Link to="/Doacoes">Doações</Link>
       <Link to="/Instituicoes">Instituições</Link>
-      <button className='um'>Entrar</button>
+      <Link to='/Entrar'><button className='um'>Entrar</button></Link>
       <Link to='/Criar'><button className='dois'>Criar conta</button></Link>
       </section>  
 

@@ -1,4 +1,5 @@
 import './index.scss';
+const nomeEstabelecimento = sessionStorage.getItem('nomeContaConectaAlimento');
 
 export default function Dashboard() {
   return (
@@ -54,7 +55,7 @@ export default function Dashboard() {
 
   <div className="ola">
 
-    <div className='titulo'><h1>Olá, Padadaria Pão Bom! 👏</h1><br />
+    <div className='titulo'><h1>Bem-vindo, {nomeEstabelecimento}!</h1><br />
     <p>Aqui esta um resuma das suas atividades</p></div>
 
 
