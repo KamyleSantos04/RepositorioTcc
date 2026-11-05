@@ -27,8 +27,8 @@ export default function Inicio() {
     </div>
 
       <section className='botoes'>
-        <Link to='./QueroDoar'><button className='doar'>Quero doar</button></Link>
-        <button className='doardois'>Preciso de alimentos</button>
+        <Link to='./Entrar'><button className='doar'>Quero doar</button></Link>
+        <Link to='/Entrar'><button className='doardois'>Preciso de alimentos</button></Link>
       </section>
 
       <div className='bege'>

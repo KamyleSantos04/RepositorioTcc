@@ -1,17 +1,18 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './index.scss';
 
 export default function Estabelecimento() {
   const [mensagem, setMensagem] = useState('');
   const [outroTipo, setOutroTipo] = useState(false);
+  const navegar = useNavigate();
 
   async function cadastrar(event) {
     event.preventDefault();
 
     const formulario = event.currentTarget;
     const formularioDados = new FormData(formulario);
-
     const dados = Object.fromEntries(formularioDados);
 
     if (dados.senha !== dados.confirmarSenha) {
@@ -36,15 +37,71 @@ export default function Estabelecimento() {
       const resultado = await resposta.json();
 
       if (!resposta.ok) {
-        throw new Error(resultado.erro);
+        throw new Error(
+          resultado.erro || 'Erro ao cadastrar estabelecimento.'
+        );
       }
 
-      setMensagem('Cadastro realizado com sucesso!');
+      // Faz login automaticamente após o cadastro
+      const respostaLogin = await fetch(
+        'http://localhost:3001/api/auth/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: dados.email,
+            senha: dados.senha
+          })
+        }
+      );
+
+      const login = await respostaLogin.json();
+
+      if (
+        !respostaLogin.ok ||
+        !login.token ||
+        login.tipo !== 'ESTABELECIMENTO'
+      ) {
+        setMensagem(
+          'Cadastro realizado! Entre com seu e-mail e senha para acessar sua conta.'
+        );
+        return;
+      }
+
+      // Salva os dados que o dashboard utiliza
+      sessionStorage.setItem(
+        'tokenConectaAlimento',
+        login.token
+      );
+
+      sessionStorage.setItem(
+        'tipoContaConectaAlimento',
+        login.tipo
+      );
+
+      sessionStorage.setItem(
+        'perfilId',
+        login.perfilId
+      );
+
+      sessionStorage.setItem(
+        'nomeContaConectaAlimento',
+        login.nome || dados.nome
+      );
+
       formulario.reset();
       setOutroTipo(false);
 
+      // Abre o dashboard do estabelecimento
+      navegar('/DashEstabelecimento');
+
     } catch (erro) {
-      setMensagem(erro.message || 'Erro ao realizar cadastro.');
+      console.error('Erro no cadastro:', erro);
+      setMensagem(
+        erro.message || 'Erro ao realizar cadastro.'
+      );
     }
   }
 
@@ -79,9 +136,7 @@ export default function Estabelecimento() {
               setOutroTipo(e.target.value === 'outro');
             }}
           >
-            <option value="" disabled>
-              Selecione o tipo
-            </option>
+            <option value="" disabled>Selecione o tipo</option>
             <option value="supermercado">Supermercado</option>
             <option value="restaurante">Restaurante</option>
             <option value="padaria">Padaria</option>
@@ -242,10 +297,7 @@ export default function Estabelecimento() {
           </button>
 
           {mensagem && (
-            <p
-              className="mensagem-sucesso"
-              role="status"
-            >
+            <p className="mensagem-sucesso" role="status">
               {mensagem}
             </p>
           )}

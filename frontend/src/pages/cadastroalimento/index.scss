@@ -1,0 +1,399 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.pagina-cadastro {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #31543b;
+  background-color: #fff;
+}
+
+/* MENU LATERAL */
+
+.menu-lateral {
+  width: 253px;
+  min-height: 100vh;
+  background-color: #173f2d;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 25px;
+
+  .logo {
+    width: 150px;
+    height: 65px;
+    margin: 0 auto 25px;
+
+    img {
+      width: 150px;
+      height: 65px;
+      object-fit: contain;
+    }
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      white-space: nowrap;
+
+      img {
+        width: 19px;
+        height: 19px;
+        object-fit: contain;
+      }
+
+      &:hover {
+        color: #e8b47c;
+      }
+    }
+  }
+
+  .sair {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: auto;
+    padding-bottom: 15px;
+
+    img {
+      width: 19px;
+      height: 19px;
+      object-fit: contain;
+    }
+  }
+}
+
+/* CONTEÚDO PRINCIPAL */
+
+.conteudo {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 15px 20px;
+  min-width: 0;
+}
+
+/* FORMULÁRIO */
+
+.formulario-area {
+  flex: 1;
+  max-width: 550px;
+  min-width: 0;
+
+  .voltar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #173f2d;
+    font-size: 20px;
+    text-decoration: none;
+    margin-bottom: 12px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  h2 {
+    font-size: 23px;
+    margin-bottom: 20px;
+    color: #31543b;
+  }
+}
+
+.form-cadastro {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+
+    > label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #31543b;
+    }
+
+    input:not([type="radio"]),
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #a1b29e;
+      border-radius: 7px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 13px;
+      color: #526d4e;
+      background-color: white;
+      outline: none;
+
+      &:focus {
+        border-color: #08713e;
+      }
+    }
+
+    input:not([type="radio"]),
+    select {
+      height: 38px;
+    }
+
+    textarea {
+      height: 63px;
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #71876b;
+    }
+  }
+
+  .campo-tipo {
+    max-width: 272px;
+  }
+
+  .campo-descricao {
+    max-width: 272px;
+  }
+
+  .linha {
+    display: flex;
+    gap: 32px;
+    align-items: flex-end;
+
+    .campo {
+      max-width: 272px;
+    }
+  }
+
+  .campo-aberto {
+    margin-top: 4px;
+
+    .opcoes {
+      display: flex;
+      gap: 28px;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+        color: #71876b;
+        font-weight: bold;
+      }
+
+      input {
+        accent-color: #08713e;
+      }
+    }
+  }
+
+  .linha-inferior {
+    margin-top: 20px;
+    gap: 45px;
+
+    .campo:first-child {
+      max-width: 272px;
+    }
+
+    .campo:last-child {
+      max-width: 150px;
+    }
+  }
+
+  .campo-local {
+    max-width: 272px;
+    margin-top: 4px;
+  }
+
+  /* BOTÕES */
+
+  .botoes {
+    display: flex;
+    gap: 38px;
+    margin-top: 10px;
+
+    button {
+      width: 119px;
+      height: 28px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .cancelar {
+      border: 1px solid #8ba18a;
+      color: #526d4e;
+      background: white;
+
+      &:hover {
+        background: #edf3ed;
+      }
+    }
+
+    .publicar {
+      border: none;
+      color: white;
+      background: #c94c32;
+
+      &:hover {
+        background: #a93c27;
+      }
+    }
+  }
+}
+
+/* QUADRO DE DICA */
+
+.dica {
+  width: 194px;
+  flex-shrink: 0;
+  margin-top: 22px;
+
+  .dica-texto {
+    background-color: #fff0cf;
+    padding: 14px;
+    border-radius: 10px 10px 0 0;
+
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e59b00;
+      font-size: 13px;
+      margin-bottom: 15px;
+
+      img {
+        width: 21px;
+        height: 21px;
+        object-fit: contain;
+      }
+    }
+
+    p {
+      color: #222;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  .foto-dica {
+    width: 194px;
+    height: 235px;
+    background-color: #f2f0df;
+    border-radius: 0 0 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    color: #526d4e;
+  }
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 1050px) {
+  .conteudo {
+    gap: 20px;
+  }
+
+  .dica {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .pagina-cadastro {
+    flex-direction: column;
+  }
+
+  .menu-lateral {
+    width: 100%;
+    min-height: auto;
+    padding: 15px;
+
+    .logo {
+      margin-bottom: 15px;
+    }
+
+    nav {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 15px;
+
+      a {
+        font-size: 13px;
+      }
+    }
+
+    .sair {
+      margin-top: 20px;
+    }
+  }
+
+  .conteudo {
+    padding: 20px;
+  }
+
+  .formulario-area {
+    width: 100%;
+  }
+
+  .form-cadastro {
+    .linha {
+      gap: 15px;
+    }
+
+    .linha-inferior {
+      margin-top: 5px;
+    }
+  }
+}
+
+@media (max-width: 450px) {
+  .form-cadastro {
+    .linha {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .campo-tipo,
+    .campo-descricao,
+    .campo-local,
+    .linha .campo,
+    .linha-inferior .campo:first-child,
+    .linha-inferior .campo:last-child {
+      max-width: 100%;
+    }
+  }
+}

@@ -1,33 +1,119 @@
-import './index.scss'
+
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import './index.scss';
 
 export default function Doacoes() {
-  return (
-    <div className='titulo'>
-      <h1>Doações</h1>
+    const [doacoes, setDoacoes] = useState([]);
+    const [busca, setBusca] = useState('');
 
-      <img src="./assets/images/logo.png" alt="" width={200} />
+    useEffect(() => {
+        async function carregarDoacoes() {
+            try {
+                const resposta = await fetch(
+                    'http://localhost:3001/api/doacoes'
+                );
 
-       <h2>Como as doações funcionam 
+                if (!resposta.ok) {
+                    throw new Error('Erro ao carregar doações');
+                }
 
-Nosso projeto tem como objetivo conectar mercados, restaurantes e outros estabelecimentos que desejam doar alimentos a ONGs que ajudam pessoas em situação de vulnerabilidade social. Dessa forma, buscamos combater o desperdício de alimentos e facilitar o acesso à alimentação para quem precisa. <br /> <br />
-Por meio da nossa plataforma, queremos tornar o processo de doação mais simples e acessível, aproximando quem pode doar de quem precisa receber. Veja como esse processo funciona. <br /> <br />
+                const dados = await resposta.json();
+                setDoacoes(Array.isArray(dados) ? dados : dados.doacoes || []);
+            } catch (erro) {
+                console.error('Erro ao buscar doações:', erro);
+            }
+        }
 
- 1. Estabelecimentos parceiros <br />
-Mercados, restaurantes, padarias e outros estabelecimentos poderão se cadastrar em nossa plataforma para disponibilizar alimentos para doação. Poderão ser doados produtos próprios para consumo, armazenados corretamente e em condições adequadas de segurança alimentar. Assim, alimentos que ainda podem ser aproveitados terão a oportunidade de chegar a pessoas que precisam deles. <br /> <br />
+        carregarDoacoes();
+    }, []);
 
- 2. Conexão com as ONGs <br />
-Após o cadastro dos alimentos, nossa plataforma ajudará a conectar os estabelecimentos às ONGs que necessitam de doações. As instituições poderão consultar os alimentos disponíveis e entrar em contato com os estabelecimentos para combinar os detalhes da doação. Dessa maneira, queremos facilitar a comunicação e tornar a distribuição dos alimentos mais eficiente. <br /> <br />
+    const doacoesFiltradas = doacoes.filter((doacao) =>
+        `${doacao.alimentos || doacao.nome || ''} 
+        ${doacao.cidade || ''} 
+        ${doacao.estado || ''} 
+        ${doacao.descricao || ''}`
+            .toLowerCase()
+            .includes(busca.toLowerCase())
+    );
 
- 3. Retirada e transporte  <br />
-Depois que a doação for combinada, o estabelecimento e a ONG poderão organizar a retirada dos alimentos, definindo os horários e a melhor forma de transporte. Durante esse processo, será importante garantir que os alimentos sejam transportados e armazenados adequadamente, preservando sua qualidade e segurança até chegarem ao destino.  <br /> <br />
+    return (
+        <div className="pagina-doacoes">
+            <header className="doacoes-header">
+                <Link to="/">
+                    <img
+                        src="/assets/images/logo.png"
+                        alt="Logo Conecta-Alimento"
+                    />
+                </Link>
 
-4. Entrega a quem precisa  <br />
-Após a retirada, os alimentos serão encaminhados às ONGs responsáveis pela distribuição. Essas instituições poderão destinar as doações às pessoas e famílias atendidas por seus projetos sociais, contribuindo para diminuir as dificuldades de acesso à alimentação. Dessa forma, os alimentos poderão cumprir seu propósito de alimentar pessoas, em vez de serem desperdiçados. <br /> <br />
+                <Link to="/" className="voltar-inicio">
+                    Voltar
+                </Link>
+            </header>
 
- Nosso objetivo é transformar o desperdício em solidariedade! 💚
-Acreditamos que pequenas atitudes podem gerar grandes mudanças. Ao aproximar estabelecimentos doadores e instituições sociais, nosso projeto busca incentivar a solidariedade, reduzir o desperdício de alimentos e contribuir para uma sociedade mais consciente e colaborativa.
+            <main className="conteudo-doacoes">
+                <h1>Doações disponíveis</h1>
 
-Mais do que conectar doações, queremos criar uma rede de apoio em que empresas, ONGs e comunidade possam trabalhar juntas para levar alimentos a quem precisa. Cada doação representa uma oportunidade de fazer a diferença e construir um futuro com mais empatia, responsabilidade e esperança.</h2>
-    </div>
-  );
+                <p className="descricao-doacoes">
+                    Confira os alimentos disponíveis para doação
+                    e encontre oportunidades para ajudar sua comunidade.
+                </p>
+
+                <input
+                    type="text"
+                    className="busca-doacoes"
+                    placeholder="Buscar alimentos ou cidade..."
+                    value={busca}
+                    onChange={(e) => setBusca(e.target.value)}
+                />
+
+                <div className="lista-doacoes">
+                    {doacoesFiltradas.length > 0 ? (
+                        doacoesFiltradas.map((doacao) => (
+                            <div className="card-doacao" key={doacao.id}>
+                                <div className="icone-doacao">♡</div>
+
+                                <h2>
+                                    {doacao.alimentos ||
+                                        doacao.nome ||
+                                        'Alimentos disponíveis'}
+                                </h2>
+
+                                <p>
+                                    <strong>Quantidade:</strong>{' '}
+                                    {doacao.quantidade || 'Não informada'}
+                                </p>
+
+                                <p>
+                                    <strong>Local:</strong>{' '}
+                                    {[doacao.cidade, doacao.estado]
+                                        .filter(Boolean)
+                                        .join(' - ') || 'Não informado'}
+                                </p>
+
+                                <p>
+                                    {doacao.descricao ||
+                                        'Alimentos disponíveis para ajudar instituições.'}
+                                </p>
+
+                                {doacao.validade && (
+                                    <p>
+                                        <strong>Validade:</strong>{' '}
+                                        {new Date(
+                                            `${String(doacao.validade).slice(0, 10)}T12:00:00`
+                                        ).toLocaleDateString('pt-BR')}
+                                    </p>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="sem-doacoes">
+                            Nenhuma doação encontrada no momento.
+                        </p>
+                    )}
+                </div>
+            </main>
+        </div>
+    );
 }

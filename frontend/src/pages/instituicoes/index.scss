@@ -1,164 +1,137 @@
 .institutions-page {
     min-height: 100vh;
-    background-color: #f8faf8;
+    background-color: #FFFFFF;
+    color: #2F4F37;
     font-family: Arial, sans-serif;
-    color: #333;
-}
+    padding-bottom: 40px;
 
-/* CABEÇALHO */
+    * {
+        font-family: Arial, sans-serif;
+        box-sizing: border-box;
+    }
 
-.institution-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 6%;
-    background-color: #EBE3D4;
-
-    .institution-brand {
+    .institution-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
+        padding: 15px 40px;
+        height: 100px;
+        background-color: #EBE3D4;
+    }
 
-        img {
-            width: 155px;
-            height: auto;
-            object-fit: contain;
-        }
+    .institution-brand img {
+        width: 120px;
+        height: 120px;
     }
 
     .institution-back-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 20px;
-        border: 1px solid #999999;
-        border-radius: 8px;
-        color: #173B29;
+        color: #2F4F37;
         text-decoration: none;
-        font-size: 14px;
         font-weight: bold;
-        transition: 0.3s;
-
-        &:hover {
-            background-color: #27845b;
-            color: #fff;
-        }
+        font-size: 18px;
     }
-}
 
-/* CONTEÚDO PRINCIPAL */
+    .institution-back-button:hover {
+        text-decoration: underline;
+    }
 
-.institution-results {
-    max-width: 1150px;
-    margin: 0 auto;
-    padding: 45px 25px;
+    .institution-results {
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 20px;
+    }
 
     h1 {
-        margin-bottom: 12px;
-        color: #246b4a;
+        color: #2F4F37;
+        text-align: center;
         font-size: 32px;
     }
 
-    > p {
-        color: #666;
-        line-height: 1.6;
+    .institution-results > p {
+        color: #2F4F37;
+        text-align: center;
+    }
+
+    .institution-search {
+        display: block;
+        width: 100%;
+        max-width: 600px;
+        margin: 25px auto;
+        padding: 13px;
+        border: 1px solid #2F4F37;
+        border-radius: 8px;
+        background-color: #FFFFFF;
+        color: #2F4F37;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .institution-search::placeholder {
+        color: #2F4F37;
+        opacity: 0.7;
+    }
+
+    .institution-search:focus {
+        border-width: 2px;
     }
 
     .institution-count {
-        margin: 22px 0;
-        color: #777;
+        margin-bottom: 20px;
+    }
+
+    .institution-cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .institution-card {
+        padding: 22px;
+        background-color: #FFFFFF;
+        border: 1px solid #2F4F37;
+        border-radius: 10px;
+        transition: 0.3s;
+        overflow-wrap: anywhere;
+    }
+
+    .institution-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .institution-card h2 {
+        margin-top: 0;
+        color: #2F4F37;
+        font-size: 21px;
+    }
+
+    .institution-location {
+        color: #2F4F37;
         font-size: 14px;
     }
-}
 
-/* CAMPO DE BUSCA */
+    .institution-description {
+        color: #2F4F37;
+        line-height: 1.5;
+    }
 
-.institution-search {
-    width: 100%;
-    max-width: 650px;
-    margin-top: 28px;
+    @media (max-width: 600px) {
+        .institution-header {
+            padding: 15px;
+            gap: 15px;
+        }
 
-    input {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 14px 18px;
-        border: 1px solid #d6dfd8;
-        border-radius: 10px;
-        background-color: #fff;
-        font-size: 15px;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        .institution-brand img {
+            width: 90px;
+        }
 
-        &:focus {
-            border-color: #27845b;
-            box-shadow: 0 0 0 3px rgba(39, 132, 91, 0.12);
+        .institution-results {
+            margin: 15px auto;
+            padding: 15px;
+        }
+
+        .institution-cards {
+            grid-template-columns: 1fr;
         }
     }
-}
-
-/* CARDS DAS INSTITUIÇÕES */
-
-.institution-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
-    margin-top: 25px;
-}
-
-.institution-card {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 24px;
-    background-color: #fff;
-    border: 1px solid #e4ebe5;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-    transition: transform 0.2s, box-shadow 0.2s;
-
-    &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-}
-
-/* CABEÇALHO DOS CARDS */
-
-.institution-card-heading {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    width: 100%;
-
-    h3 {
-        margin: 0 0 8px;
-        color: #285b42;
-        font-size: 18px;
-        line-height: 1.4;
-    }
-}
-
-/* ÍCONE DA INSTITUIÇÃO */
-
-.institution-card-icon {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 62px;
-    height: 62px;
-    overflow: hidden;
-    background-color: #edf6ef;
-    border-radius: 12px;
-
-    img {
-        width: 100%;
-    }
-
-    .institution-donate-button {
-        color: #fff;
-        margin-top: 20px;
-    }
-    
-
 
 }

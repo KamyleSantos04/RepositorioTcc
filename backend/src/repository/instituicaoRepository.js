@@ -1,13 +1,26 @@
+
 import { con } from '../database.js';
 
 export async function listarInstituicoes(busca = '') {
     const termo = `%${busca}%`;
+
     const [linhas] = await con.query(`
-        select i.id, i.nome, i.tipo_instituicao, i.descricao, i.cidade, i.estado,
-               i.pessoas_atendidas, i.frequencia_doacao, i.alimentos_necessarios
-          from instituicoes i
-         where i.nome like ? or i.cidade like ? or i.alimentos_necessarios like ?
-         order by i.nome
+        SELECT
+            id,
+            nome,
+            tipo_instituicao,
+            descricao,
+            cidade,
+            estado,
+            pessoas_atendidas,
+            frequencia_doacao,
+            alimentos_necessarios
+        FROM instituicoes13
+        WHERE nome LIKE ?
+           OR cidade LIKE ?
+           OR alimentos_necessarios LIKE ?
+        ORDER BY nome
     `, [termo, termo, termo]);
+
     return linhas;
 }

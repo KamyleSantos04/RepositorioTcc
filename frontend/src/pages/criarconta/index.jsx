@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 export default function CriarConta(){
     return(
         <div className='criar'>
+           <Link to='/'><img className='voltar' src='./assets/icons/voltar.png' alt=''></img></Link>
+
             <div className="titulos">
                 <h1>Ainda não tem uma conta?</h1>
                 <p>escolha como você quer se cadastrar:</p>
@@ -29,6 +31,7 @@ export default function CriarConta(){
                 </div>
             </Link>
 
+            
 
 
        

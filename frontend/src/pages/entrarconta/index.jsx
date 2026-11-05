@@ -1,63 +1,132 @@
 import './index.scss'
 import { Link, useNavigate } from 'react-router-dom'
 
-export default function Entrar(){
+export default function Entrar() {
     const navegar = useNavigate()
 
-    async function entrar(){
+    async function entrar(event) {
+        event.preventDefault()
+
         const email = document.querySelector('.entrar input[type="text"]').value
         const senha = document.querySelector('.entrar input[type="password"]').value
+        const tipoConta = document.querySelector('.entrar select').value
+
+        if (!email || !senha) {
+            alert('Preencha o e-mail e a senha!')
+            return
+        }
+
+        if (!tipoConta) {
+            alert('Escolha o tipo de conta!')
+            return
+        }
 
         try {
-            const resposta = await fetch('http://localhost:3001/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, senha })
-            })
+            const resposta = await fetch(
+                'http://localhost:3001/api/auth/login',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, senha })
+                }
+            )
 
             const resultado = await resposta.json()
 
             if (!resposta.ok) {
-                alert(resultado.erro || 'Erro ao fazer login')
+                alert(resultado.erro || 'E-mail ou senha incorretos.')
                 return
             }
 
-            sessionStorage.setItem('token', resultado.token)
-            sessionStorage.setItem('tipoConta', resultado.usuario.tipo)
+            // O backend retorna o tipo diretamente em resultado.tipo
+            const tipo = resultado.tipo
 
-            if (resultado.usuario.tipo === 'ESTABELECIMENTO') {
+            if (!tipo) {
+                alert('O servidor não retornou o tipo de conta.')
+                return
+            }
+
+            if (tipo !== tipoConta) {
+                alert('O tipo de conta selecionado não corresponde ao seu cadastro.')
+                return
+            }
+
+            // Salva os dados usados pelo Dashboard
+            sessionStorage.setItem('tokenConectaAlimento', resultado.token)
+            sessionStorage.setItem('tipoContaConectaAlimento', tipo)
+            sessionStorage.setItem('perfilId', resultado.perfilId)
+            sessionStorage.setItem(
+                'nomeContaConectaAlimento',
+                resultado.nome || ''
+            )
+
+            // Abre o dashboard correspondente
+            if (tipo === 'ESTABELECIMENTO') {
                 navegar('/DashEstabelecimento')
-            } else if (resultado.usuario.tipo === 'ONG') {
-                navegar('/dashong')
+            } else if (tipo === 'ONG') {
+                navegar('/DashONG')
             } else {
                 alert('Tipo de conta não reconhecido.')
             }
 
         } catch (erro) {
-            alert('Não foi possível conectar com o servidor.')
+            console.error('Erro no login:', erro)
+
+            alert(
+                'Não foi possível conectar ao servidor. Confira se o backend está ligado na porta 3001.'
+            )
         }
     }
 
-    return(
+    return (
         <div className='entrar'>
-            <img src='./assets/images/logo.png' alt='' width={150}/>
+            <img
+                src='/assets/images/logo.png'
+                alt='Logo Conecta-Alimento'
+                width={150}
+            />
 
             <h1>Bem-Vindo de volta!</h1>
-            <p>faça login para continuar</p>
+            <p>Faça login para continuar</p>
 
-            <h2>Email ou Usuário</h2>
-            <input type='text' placeholder='Digite seu e-mail'/>
+            <form onSubmit={entrar}>
+                <h2>Email ou Usuário</h2>
+                <input
+                    type='text'
+                    placeholder='Digite seu e-mail'
+                    required
+                />
 
-            <h2>Senha</h2>
-            <input type='password' placeholder='Digite sua senha'/>
+                <h2>Senha</h2>
+                <input
+                    type='password'
+                    placeholder='Digite sua senha'
+                    required
+                />
 
-            <p>esqueceu a senha?</p>
+                <h2>Tipo de conta</h2>
+                <select defaultValue='' required>
+                    <option value='' disabled>
+                        Selecione sua conta
+                    </option>
+                    <option value='ONG'>ONG ou Instituição</option>
+                    <option value='ESTABELECIMENTO'>
+                        Estabelecimento Doador
+                    </option>
+                </select>
 
-            <button onClick={entrar}>entrar</button>
-            <p>ou</p>
-            <Link to='/Criar'><button>criar conta</button></Link>
+                <p>Esqueceu a senha?</p>
+
+                <button type='submit'>Entrar</button>
+            </form>
+
+            <p>Ou</p>
+
+            <Link to='/Criar'>
+                <button type='button'>Criar conta</button>
+            </Link>
         </div>
     )
 }

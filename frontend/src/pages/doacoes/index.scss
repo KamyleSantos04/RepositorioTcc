@@ -1,0 +1,139 @@
+
+.pagina-doacoes {
+    min-height: 100vh;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    color: #2F4F37;
+}
+
+.doacoes-header {
+    background-color: #EBE3D4;
+    height: 100px;
+    padding: 15px 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    img {
+        width: 100px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .voltar-inicio {
+        color: #2F4F37;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .voltar-inicio:hover {
+        text-decoration: underline;
+    }
+}
+
+.conteudo-doacoes {
+    width: 88%;
+    max-width: 1100px;
+    margin: 40px auto;
+
+    h1 {
+        text-align: center;
+        font-size: 32px;
+        margin-bottom: 12px;
+    }
+
+    .descricao-doacoes {
+        text-align: center;
+        font-size: 16px;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    .busca-doacoes {
+        display: block;
+        width: 100%;
+        max-width: 500px;
+        box-sizing: border-box;
+        padding: 13px 16px;
+        margin: 0 auto 35px;
+        border: 1px solid #cccccc;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    .busca-doacoes:focus {
+        border-color: #2F4F37;
+    }
+}
+
+.lista-doacoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 22px;
+}
+
+.card-doacao {
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    padding: 22px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: translateY(-3px);
+    }
+
+    .icone-doacao {
+        font-size: 30px;
+        color: #C44B30;
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        font-size: 21px;
+        margin-bottom: 18px;
+        color: #2F4F37;
+    }
+
+    p {
+        font-size: 15px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    strong {
+        color: #2F4F37;
+    }
+}
+
+.sem-doacoes {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px;
+    color: #666666;
+}
+
+@media (max-width: 600px) {
+    .doacoes-header {
+        padding: 12px 5%;
+
+        img {
+            width: 75px;
+        }
+
+        .voltar-inicio {
+            font-size: 14px;
+        }
+    }
+
+    .conteudo-doacoes {
+        margin: 30px auto;
+
+        h1 {
+            font-size: 26px;
+        }
+    }
+}

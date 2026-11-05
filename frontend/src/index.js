@@ -10,8 +10,9 @@ import Doacoes from './pages/doacoes/index';
 import Instituicoes from './pages/instituicoes/index';
 import CadastroInstituicao from './pages/contaong/index';
 import Estabelecimento from './pages/contaestabele/index';
-import QueroDoar from './pages/querodoar';
+import CadastrarAlimento from './pages/cadastroalimento/index'
 import Dashboard from './pages/dashestabelecimento';
+import DashboardONG from './pages/dashong/index';
 import Entrar from './pages/entrarconta/index';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -29,9 +30,10 @@ root.render(
         <Route path="/Instituicoes" element={<Instituicoes />} />
         <Route path="/CadastroInstituicao" element={<CadastroInstituicao />} />
         <Route path="/Estabelecimento" element={<Estabelecimento />}/>
-        <Route path='/QueroDoar' element={<QueroDoar />} />
+        <Route path='/CadastrarAlimento' element={<CadastrarAlimento />} />
         <Route path='/DashEstabelecimento' element={<Dashboard />} />
         <Route path="/Entrar" element={<Entrar />} />
+        <Route path="/DashONG" element={<DashboardONG />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

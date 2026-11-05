@@ -1,17 +1,18 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './index.scss';
 
 export default function CadastroInstituicao() {
   const [mensagem, setMensagem] = useState('');
   const [outroTipo, setOutroTipo] = useState(false);
+  const navegar = useNavigate();
 
   async function cadastrar(event) {
     event.preventDefault();
 
     const formulario = event.currentTarget;
     const formularioDados = new FormData(formulario);
-
     const dados = Object.fromEntries(formularioDados);
 
     if (dados.senha !== dados.confirmarSenha) {
@@ -36,15 +37,67 @@ export default function CadastroInstituicao() {
       const resultado = await resposta.json();
 
       if (!resposta.ok) {
-        throw new Error(resultado.erro);
+        throw new Error(
+          resultado.erro || 'Erro ao cadastrar instituição.'
+        );
       }
 
-      setMensagem('Cadastro realizado com sucesso!');
+      // Faz login automaticamente após o cadastro
+      const respostaLogin = await fetch(
+        'http://localhost:3001/api/auth/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: dados.email,
+            senha: dados.senha
+          })
+        }
+      );
+
+      const login = await respostaLogin.json();
+
+      if (!respostaLogin.ok || !login.token || login.tipo !== 'ONG') {
+        setMensagem(
+          'Cadastro realizado! Entre com seu e-mail e senha para acessar sua conta.'
+        );
+        return;
+      }
+
+      // Salva os dados que o dashboard utiliza
+      sessionStorage.setItem(
+        'tokenConectaAlimento',
+        login.token
+      );
+
+      sessionStorage.setItem(
+        'tipoContaConectaAlimento',
+        login.tipo
+      );
+
+      sessionStorage.setItem(
+        'perfilId',
+        login.perfilId
+      );
+
+      sessionStorage.setItem(
+        'nomeContaConectaAlimento',
+        login.nome || dados.nome
+      );
+
       formulario.reset();
       setOutroTipo(false);
 
+      // Abre o dashboard da ONG
+      navegar('/DashONG');
+
     } catch (erro) {
-      setMensagem(erro.message || 'Erro ao realizar cadastro.');
+      console.error('Erro no cadastro:', erro);
+      setMensagem(
+        erro.message || 'Erro ao realizar cadastro.'
+      );
     }
   }
 
@@ -77,9 +130,7 @@ export default function CadastroInstituicao() {
               setOutroTipo(e.target.value === 'outro');
             }}
           >
-            <option value="" disabled>
-              Selecione o tipo
-            </option>
+            <option value="" disabled>Selecione o tipo</option>
             <option value="ong">ONG</option>
             <option value="abrigo">Abrigo</option>
             <option value="instituicao-social">
@@ -215,9 +266,7 @@ export default function CadastroInstituicao() {
             required
             defaultValue=""
           >
-            <option value="" disabled>
-              Selecione a frequência
-            </option>
+            <option value="" disabled>Selecione a frequência</option>
             <option value="semanal">Semanal</option>
             <option value="quinzenal">Quinzenal</option>
             <option value="mensal">Mensal</option>
@@ -264,10 +313,7 @@ export default function CadastroInstituicao() {
           </button>
 
           {mensagem && (
-            <p
-              className="mensagem-sucesso"
-              role="status"
-            >
+            <p className="mensagem-sucesso" role="status">
               {mensagem}
             </p>
           )}

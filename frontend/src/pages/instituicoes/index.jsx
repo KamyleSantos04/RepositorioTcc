@@ -1,115 +1,116 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import "./index.scss";
 
-
-
-const instituicoes = [
-    {
-        nome: "Abrigo Nosso Lar",
-        cidade: "São Paulo - SP",
-        descricao:
-            "Oferece alimentação e acolhimento para pessoas em situação de vulnerabilidade.",
-        icone: "111.png",
-    },
-    {
-        nome: "Abrigo Esperança",
-        cidade: "Rio de Janeiro - RJ",
-        descricao:
-            "Acolhe pessoas que precisam de apoio e ajuda com alimentação.",
-        icone: "66.png",
-    },
-    {
-        nome: "Casa de Acolhimento Vida Nova",
-        cidade: "Belo Horizonte - MG",
-        descricao:
-            "Oferece acolhimento e refeições para pessoas em situação de vulnerabilidade.",
-        icone: "88.png",
-    },
-];
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import './index.scss';
 
 export default function Instituicoes() {
-    const [busca, setBusca] = useState("");
+    const [instituicoes, setInstituicoes] = useState([]);
+    const [busca, setBusca] = useState('');
+    const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState('');
+
+    useEffect(() => {
+        async function carregarInstituicoes() {
+            try {
+                const resposta = await fetch(
+                    'http://localhost:3001/api/instituicoes'
+                );
+
+                if (!resposta.ok) {
+                    throw new Error('Não foi possível carregar as instituições.');
+                }
+
+                const dados = await resposta.json();
+
+                setInstituicoes(
+                    Array.isArray(dados) ? dados : dados.instituicoes || []
+                );
+            } catch (erro) {
+                console.error(erro);
+                setErro('Não foi possível carregar as instituições.');
+            } finally {
+                setCarregando(false);
+            }
+        }
+
+        carregarInstituicoes();
+    }, []);
 
     const resultado = instituicoes.filter((instituicao) =>
-        `${instituicao.nome} ${instituicao.cidade}`
+        `${instituicao.nome || ''} ${instituicao.cidade || ''} ${instituicao.estado || ''}`
             .toLowerCase()
             .includes(busca.toLowerCase())
     );
 
     return (
         <main className="institutions-page">
-           <header className="institution-header">
-    <Link to="/" className="institution-brand">
-        <img
-            src="/assets/images/logo.png"
-            alt="Alimento que Conecta"
-        />
-    </Link>
+            <header className="institution-header">
+                <Link to="/" className="institution-brand">
+                    <img
+                        src="/assets/images/logo.png"
+                        alt="Alimento que Conecta"
+                    />
+                </Link>
 
-    <Link to="/" className="institution-back-button">
-        Voltar para o início
-    </Link>
-</header>
+                <Link to="/" className="institution-back-button">
+                 Voltar
+                </Link>
+            </header>
 
             <section className="institution-results">
                 <h1>Instituições</h1>
 
                 <p>
-                    Conheça instituições que precisam de apoio para levar
-                    alimentos a quem mais precisa.
+                    Conheça as instituições cadastradas no Conecta-Alimento.
                 </p>
 
-                <div className="institution-search">
-                    <input
-                        type="search"
-                        placeholder="Buscar instituição ou cidade..."
-                        value={busca}
-                        onChange={(e) =>
-                            setBusca(e.target.value)
-                        }
-                    />
-                </div>
+                <input
+                    className="institution-search"
+                    type="search"
+                    placeholder="Buscar instituição ou cidade..."
+                    value={busca}
+                    onChange={(e) => setBusca(e.target.value)}
+                />
 
-                <p className="institution-count">
-                    {resultado.length} instituições encontradas
-                </p>
+                {carregando && <p>Carregando instituições...</p>}
 
-                <div className="institution-cards">
-                    {resultado.map((instituicao) => (
-                        <article
-                            className="institution-card"
-                            key={instituicao.nome}
-                        >
-                            <div className="institution-card-heading">
-                                <div className="institution-card-icon">
-                                    <img
-                                        src='' alt=""
-                                    />
-                                </div>
+                {erro && <p>{erro}</p>}
 
-                                <div>
-                                    <h3>{instituicao.nome}</h3>
+                {!carregando && !erro && (
+                    <>
+                        <p className="institution-count">
+                            {resultado.length} instituições encontradas
+                        </p>
+
+                        <div className="institution-cards">
+                            {resultado.map((instituicao) => (
+                                <article
+                                    className="institution-card"
+                                    key={instituicao.id}
+                                >
+                                    <h2>{instituicao.nome}</h2>
 
                                     <p className="institution-location">
                                         {instituicao.cidade}
+                                        {instituicao.estado
+                                            ? ` - ${instituicao.estado}`
+                                            : ''}
                                     </p>
-                                </div>
-                            </div>
 
-                            <p className="institution-description">
-                                {instituicao.descricao}
+                                    <p className="institution-description">
+                                        {instituicao.descricao ||
+                                            'Instituição cadastrada no Conecta-Alimento.'}
+                                    </p>
+                                </article>
+                            ))}
+                        </div>
+
+                        {resultado.length === 0 && (
+                            <p>
+                                Nenhuma instituição encontrada.
                             </p>
-
-                            <Link to="/QueroDoar" className="institution-donate-button"> ♡ Contribuir</Link>
-                        </article>
-                    ))}
-                </div>
-
-                {resultado.length === 0 && (
-                    <p>
-                        Nenhuma instituição encontrada. Tente outra busca.
-                    </p>
+                        )}
+                    </>
                 )}
             </section>
         </main>
