@@ -1,18 +1,12 @@
+import './index.scss'
+import { Link, useNavigate } from 'react-router-dom'
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './index.scss';
+export default function Entrar(){
+    const navegar = useNavigate()
 
-export default function Entrar() {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-    const [mensagem, setMensagem] = useState('');
-
-    const navigate = useNavigate();
-
-    async function entrar(event) {
-        event.preventDefault();
-        setMensagem('');
+    async function entrar(){
+        const email = document.querySelector('.entrar input[type="text"]').value
+        const senha = document.querySelector('.entrar input[type="password"]').value
 
         try {
             const resposta = await fetch('http://localhost:3001/api/auth/login', {
@@ -21,81 +15,49 @@ export default function Entrar() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email, senha })
-            });
+            })
 
-            const dados = await resposta.json();
+            const resultado = await resposta.json()
 
             if (!resposta.ok) {
-                setMensagem(dados.erro || 'Não foi possível realizar o login.');
-                return;
+                alert(resultado.erro || 'Erro ao fazer login')
+                return
             }
 
-            sessionStorage.setItem('tokenConectaAlimento', dados.token);
-            sessionStorage.setItem('tipoContaConectaAlimento', dados.tipo);
-            sessionStorage.setItem('nomeContaConectaAlimento', dados.nome);
+            sessionStorage.setItem('token', resultado.token)
+            sessionStorage.setItem('tipoConta', resultado.usuario.tipo)
 
-            if (dados.tipo === 'ESTABELECIMENTO') {
-                navigate('/DashEstabelecimento');
-            } else if (dados.tipo === 'ONG') {
-                navigate('/DashONG');
+            if (resultado.usuario.tipo === 'ESTABELECIMENTO') {
+                navegar('/DashEstabelecimento')
+            } else if (resultado.usuario.tipo === 'ONG') {
+                navegar('/dashong')
             } else {
-                setMensagem('Tipo de conta inválido.');
+                alert('Tipo de conta não reconhecido.')
             }
 
         } catch (erro) {
-            setMensagem('Não foi possível conectar ao servidor.');
+            alert('Não foi possível conectar com o servidor.')
         }
     }
 
-    return (
-        <div className="pagina-login">
+    return(
+        <div className='entrar'>
+            <img src='./assets/images/logo.png' alt='' width={150}/>
 
-            <div className="login-container">
+            <h1>Bem-Vindo de volta!</h1>
+            <p>faça login para continuar</p>
 
-                <a href="/" className="login-voltar">← Voltar</a>
+            <h2>Email ou Usuário</h2>
+            <input type='text' placeholder='Digite seu e-mail'/>
 
-                <div className="login-conteudo">
+            <h2>Senha</h2>
+            <input type='password' placeholder='Digite sua senha'/>
 
-                    <h1>Bem-vindo de volta!</h1>
+            <p>esqueceu a senha?</p>
 
-                    <p>Entre na sua conta para continuar conectando pessoas e alimentos.</p>
-
-                    <form onSubmit={entrar}>
-
-                        <label>E-mail</label>
-                        <input
-                            type="email"
-                            placeholder="Digite seu e-mail"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-
-                        <label>Senha</label>
-                        <input
-                            type="password"
-                            placeholder="Digite sua senha"
-                            value={senha}
-                            onChange={(e) => setSenha(e.target.value)}
-                            required
-                        />
-
-                        {mensagem && (
-                            <p className="login-mensagem">{mensagem}</p>
-                        )}
-
-                        <button type="submit">Entrar na conta</button>
-
-                    </form>
-
-                    <p className="login-cadastro">
-                        Ainda não tem uma conta?
-                        <a href="/CriarConta"> Cadastre-se</a>
-                    </p>
-
-                </div>
-            </div>
-
+            <button onClick={entrar}>entrar</button>
+            <p>ou</p>
+            <Link to='/Criar'><button>criar conta</button></Link>
         </div>
-    );
+    )
 }

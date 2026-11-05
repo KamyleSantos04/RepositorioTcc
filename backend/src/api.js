@@ -5,7 +5,12 @@ import { con } from './database.js';
 import { addRoutes } from './routes.js';
 
 const api = express();
-api.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001'] }));
+api.use(cors({
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:3002'
+    ]
+}));
 api.use(express.json());
 
 api.get('/', (req, res) => {

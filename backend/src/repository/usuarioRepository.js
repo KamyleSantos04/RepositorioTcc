@@ -18,7 +18,7 @@ export async function criarUsuario(usuario) {
 
 export async function criarInstituicao(dados) {
     const [resultado] = await con.query(`
-        insert into instituicoes
+        insert into instituicoes13
         (usuario_id, nome, tipo_instituicao, outro_tipo, cnpj, descricao,
          responsavel, telefone, cep, estado, rua, numero, complemento, bairro,
          cidade, pessoas_atendidas, frequencia_doacao, alimentos_necessarios, observacoes)
@@ -35,7 +35,7 @@ export async function criarInstituicao(dados) {
 
 export async function criarEstabelecimento(dados) {
     const [resultado] = await con.query(`
-        insert into estabelecimentos
+        insert into estabelecimentos13
         (usuario_id, nome, tipo_estabelecimento, outro_tipo, cnpj, telefone, cep,
          rua, numero, complemento, bairro, cidade, estado, responsavel,
          cpf_responsavel, cargo_responsavel)
@@ -50,7 +50,7 @@ export async function criarEstabelecimento(dados) {
 }
 
 export async function buscarPerfil(id, tipo) {
-    const tabela = tipo === 'ONG' ? 'instituicoes' : 'estabelecimentos';
+    const tabela = tipo === 'ONG' ? 'instituicoes13' : 'estabelecimentos13';
     const [linhas] = await con.query(`select * from ${tabela} where usuario_id = ?`, [id]);
     return linhas[0];
 }
