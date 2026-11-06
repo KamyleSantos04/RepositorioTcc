@@ -82,51 +82,61 @@ export default function Entrar() {
 
     return (
         <div className='entrar'>
-            <img
-                src='/assets/images/logo.png'
-                alt='Logo Conecta-Alimento'
-                width={150}
-            />
+            
+           <div className='hola'> 
+            <img className='logu' src='/assets/images/logo.png' alt='Logo Conecta-Alimento' width={150}/>
+          
+  <div className="bemvindo">
+        <h1>Bem-vindo de volta!</h1>
+        <p>Faça login para continuar</p>
+ </div>
 
-            <h1>Bem-Vindo de volta!</h1>
-            <p>Faça login para continuar</p>
-
-            <form onSubmit={entrar}>
-                <h2>Email ou Usuário</h2>
-                <input
-                    type='text'
-                    placeholder='Digite seu e-mail'
-                    required
-                />
-
-                <h2>Senha</h2>
-                <input
-                    type='password'
-                    placeholder='Digite sua senha'
-                    required
-                />
-
-                <h2>Tipo de conta</h2>
-                <select defaultValue='' required>
-                    <option value='' disabled>
-                        Selecione sua conta
-                    </option>
-                    <option value='ONG'>ONG ou Instituição</option>
-                    <option value='ESTABELECIMENTO'>
-                        Estabelecimento Doador
-                    </option>
-                </select>
-
-                <p>Esqueceu a senha?</p>
-
-                <button type='submit'>Entrar</button>
-            </form>
-
-            <p>Ou</p>
-
-            <Link to='/Criar'>
-                <button type='button'>Criar conta</button>
-            </Link>
+        
+            </div>
+                  
+            
+            <div className="mano">
+                
+               
+                <form onSubmit={entrar}>
+                    <div className="email">
+                        <h2>Email ou Usuário</h2>
+                        <input
+                            type='text'
+                            placeholder='Digite seu e-mail'
+                            required
+                        />
+                    </div>
+                    <div className="senha">
+                        <h2>Senha</h2>
+                        <input
+                            type='password'
+                            placeholder='Digite sua senha'
+                            required
+                        />
+                    </div>
+                    <div className="conta">
+                        <h2>Tipo de conta</h2>
+                        <select defaultValue='' required>
+                            <option value='' disabled>
+                                Selecione sua conta
+                            </option>
+                            <option value='ONG'>ONG ou Instituição</option>
+                            <option value='ESTABELECIMENTO'>
+                                Estabelecimento Doador
+                            </option>
+                        </select>
+                    </div>
+                    <p className='esque'>Esqueceu a senha?</p>
+                    <button className='botaoum' type='submit'>Entrar</button>
+                </form>
+              
+                <p className='ou'>ou</p>
+             
+                <Link to='/Criar'>
+                    <button className='botaodois' type='button'>Criar conta</button>
+                </Link>
+            </div>
         </div>
     )
 }

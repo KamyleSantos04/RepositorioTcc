@@ -1,0 +1,97 @@
+.entrar{
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    align-items: center;
+    border-radius: 15px;
+    flex-direction: column;
+    text-align: justify;
+    background-color: #EBE3D4;
+    height: 530px;
+    width: 575px;
+    margin-top: 20px;
+    margin-left: 355px;
+
+    .bemvindo p{
+        color: #5A7857;
+    }
+    .bemvindo{
+margin-right: 80px;
+
+    }
+     input{
+        border: 2px solid #D8E2D0;
+        border-radius: 5px;
+        padding: 4px;
+     }
+
+     select{
+        border: 2px solid #cfd1cd;
+        border-radius: 5px;
+        padding: 4px;
+        color: #76816E;
+     }
+
+     .ou{
+        color: #5A7857;
+        margin-left: 50px;
+     }
+
+     .botaodois{
+        border: 1px solid #496147;
+        border-radius: 3px;
+        width: 109px;
+        height: 28px;
+        padding: 5px;
+        color: #2F4F37;
+         cursor: pointer;
+     }
+
+.logu{
+margin-right: 30px;
+
+}
+     .hola{
+display: flex;
+align-items: center;
+
+     }
+
+     .botaoum{
+        background-color: #C44B30;
+        border: none;
+        border-radius: 3px;
+        width: 109px;
+        height: 28px;
+        color: white;
+        padding: 5px;
+         cursor: pointer;
+     }
+    .email h2{
+        color: #5A7857;
+        font-size: 25px;
+    }
+
+    .esque{
+        color: #5A7857;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .senha h2{
+        color: #5A7857;
+        font-size: 25px;
+    }
+
+    .conta h2{
+        color: #5A7857;
+        font-size: 25px;
+    }
+
+    .mano{
+        margin-top: 20px;
+        margin-right: 310px;
+    }
+
+    
+}
