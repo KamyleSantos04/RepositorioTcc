@@ -1,0 +1,271 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.pagina {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f0e8;
+  font-family: Arial, sans-serif;
+  color: #263c2e;
+}
+
+.menu {
+  width: 250px;
+  min-height: 100vh;
+  padding: 25px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  background: #315c42;
+
+  .logo {
+    width: 140px;
+    height: 120px;
+    object-fit: contain;
+    margin: 0 auto 25px;
+  }
+
+  a {
+    padding: 13px 12px;
+    color: #fffdf8;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 9px;
+    transition: 0.3s;
+  }
+
+  a:hover {
+    background: #477653;
+  }
+
+  .sair {
+    margin-top: auto;
+  }
+}
+
+.conteudo {
+  flex: 1;
+  min-width: 0;
+  padding: 35px;
+
+  > h1 {
+    margin-bottom: 10px;
+    font-size: 28px;
+    color: #244631;
+  }
+
+  > p {
+    margin-bottom: 25px;
+    color: #718074;
+    line-height: 1.6;
+  }
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.card {
+  padding: 24px;
+  margin-bottom: 18px;
+  background: #fffdf8;
+  border: 1px solid #e8e2d8;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(37, 60, 43, 0.05);
+
+  h2 {
+    margin-bottom: 15px;
+    font-size: 19px;
+    color: #315c42;
+  }
+
+  p {
+    margin-bottom: 10px;
+    color: #68776b;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.botao {
+  display: inline-block;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #315c42;
+  color: white;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover {
+    background: #244631;
+  }
+}
+
+.secundario {
+  background: #f3e5df;
+  color: #a6533d;
+
+  &:hover {
+    background: #ead1c7;
+  }
+}
+
+.botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.status {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.ativa,
+.concluida {
+  background: #e1f1df;
+  color: #327044;
+}
+
+.solicitada {
+  background: #fbe8e0;
+  color: #b84b38;
+}
+
+.resumos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+
+  .card h2 {
+    font-size: 28px;
+  }
+}
+
+.estabelecimento-card {
+  max-width: 550px;
+  margin-top: 25px;
+
+  .icone-estabelecimento {
+    margin-bottom: 15px;
+    font-size: 35px;
+  }
+
+  .botao {
+    margin-top: 10px;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  label {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #315c42;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d9ded5;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    font-size: 14px;
+
+    &:focus {
+      border-color: #477653;
+    }
+  }
+
+  .botao {
+    align-self: flex-start;
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 800px) {
+  .menu {
+    width: 200px;
+  }
+
+  .conteudo {
+    padding: 22px;
+  }
+
+  .lista {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 550px) {
+  .pagina {
+    flex-direction: column;
+  }
+
+  .menu {
+    width: 100%;
+    min-height: auto;
+    padding: 12px;
+
+    .logo {
+      width: 90px;
+      height: 65px;
+      margin-bottom: 10px;
+    }
+
+    a {
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .sair {
+      margin-top: 0;
+    }
+  }
+
+  .conteudo {
+    padding: 20px 14px;
+
+    > h1 {
+      font-size: 23px;
+    }
+  }
+
+  .resumos {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .acoes {
+    justify-content: flex-start;
+  }
+}

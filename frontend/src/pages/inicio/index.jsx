@@ -7,28 +7,56 @@ export default function Inicio() {
     <div className="principal">
       
       <section className='cima'>
-      <img src='./assets/images/logo.png' alt=''></img>
-      <Link className='ini' to="/">Início</Link>
-      <Link to="/ComoFunciona">Como funciona</Link>
-      <Link to="/Doacoes">Doações</Link>
-      <Link to="/Instituicoes">Instituições</Link>
-      <Link to='/Entrar'><button className='um'>Entrar</button></Link>
-      <Link to='/Criar'><button className='dois'>Criar conta</button></Link>
+        <img className="logo" src='./assets/images/logo.png' alt='' width={110}></img>
+
+        <Link className='ini' to="/">Início</Link>
+        <Link to="/ComoFunciona">Como funciona</Link>
+        <Link to="/Doacoes">Doações</Link>
+        <Link to="/Instituicoes">Instituições</Link>
+
+        <Link to='/Entrar'>
+          <button className='um'>Entrar</button>
+        </Link>
+
+        <Link to='/Criar'>
+          <button className='dois'>Criar conta</button>
+        </Link>
       </section>  
 
-    <div className="maior">
-      <section className='texto'>
-     <h1 className='menos'>Menos desperdício. <br/> <span>Mais alimento</span>  <br /> chegando a quem precisa.</h1>
+      <div className="maior">
+        <section className='texto'>
+          <h1 className='menos'>
+            Menos desperdício. <br/>
+            <span>Mais alimento</span> <br />
+            chegando a quem precisa.
+          </h1>
 
-      <p className='conectamos'>Conectamos estabelecimentos que possuem <br />excedentes alimentares  a instituições <br />que precisam deles.</p>
+          <p className='conectamos'>
+            Conectamos estabelecimentos que possuem <br />
+            excedentes alimentares a instituições <br />
+            que precisam deles.
+          </p>
         </section>
-      <div className="foto"><img src='./assets/images/bonequinhos.png' alt='' width={400}></img></div>
-    
-    </div>
+
+        <div className="foto">
+          <img src='./assets/images/bonequinhos.png' alt='' width={400}></img>
+        </div>
+      </div>
 
       <section className='botoes'>
-        <Link to='./Entrar'><button className='doar'>Quero doar</button></Link>
-        <Link to='/Entrar'><button className='doardois'>Preciso de alimentos</button></Link>
+
+        <Link to='/Entrar?origem=doar'>
+          <button className='doar'>
+            Quero doar
+          </button>
+        </Link>
+
+        <Link to='/Entrar?origem=receber'>
+          <button className='doardois'>
+            Preciso de alimentos
+          </button>
+        </Link>
+
       </section>
 
       <div className='bege'>
@@ -37,16 +65,14 @@ export default function Inicio() {
           <img src='./assets/images/pessoass.png' alt='' width={150}></img>
           <img src='./assets/images/folha.png' alt='' width={150}></img>
         </div>
+
         <div className='testu'>
           <p>Conecta estabelecimento e instituições</p>
           <p>Combate a fome e o desperdício</p>
           <p className='sim'>Fortalece as comunidades</p>
-
-         
         </div>
       </div>
+
     </div>
   );
 }
-
-
