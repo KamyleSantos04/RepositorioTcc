@@ -60,17 +60,7 @@ export default function Inicio() {
       </section>
 
       <div className='bege'>
-        <div className="icons">
-          <img src='./assets/images/maca.png' alt='' width={150}></img>
-          <img src='./assets/images/pessoass.png' alt='' width={150}></img>
-          <img src='./assets/images/folha.png' alt='' width={150}></img>
-        </div>
-
-        <div className='testu'>
-          <p>Conecta estabelecimento e instituições</p>
-          <p>Combate a fome e o desperdício</p>
-          <p className='sim'>Fortalece as comunidades</p>
-        </div>
+       <img src='./assets/images/bege.png' alt='' width={1300}></img>
       </div>
 
     </div>
