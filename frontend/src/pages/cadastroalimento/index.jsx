@@ -6,6 +6,7 @@ import { api } from '../../lib/api';
 import { TIPO_ESTABELECIMENTO } from '../../lib/sessao';
 import useProtecao from '../../hooks/useProtecao';
 import './index.scss';
+import '../../components/aviso/index.scss';
 
 const CATEGORIAS = [
     'Frutas',

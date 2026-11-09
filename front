@@ -26,7 +26,7 @@ export default function OngSolicitacoes() {
             const dados = await api.minhasSolicitacoes();
             setSolicitacoes(Array.isArray(dados) ? dados : []);
         } catch (falha) {
-            setErro(falha.message);
+            setErro(falha.message || 'Erro ao carregar as solicitações.');
         } finally {
             setCarregando(false);
         }
@@ -43,12 +43,14 @@ export default function OngSolicitacoes() {
 
         try {
             await api.concluirSolicitacao(solicitacao.id);
+
             setSucesso(
                 `Retirada de "${solicitacao.nome_alimento}" confirmada com sucesso!`
             );
+
             await carregar();
         } catch (falha) {
-            setErro(falha.message);
+            setErro(falha.message || 'Erro ao confirmar a retirada.');
         } finally {
             setProcessando(null);
         }
@@ -57,6 +59,10 @@ export default function OngSolicitacoes() {
     const emAndamento = solicitacoes.filter((item) =>
         ['PENDENTE', 'ACEITA'].includes(item.status)
     );
+
+    const encerradas = solicitacoes
+        .filter((item) => !['PENDENTE', 'ACEITA'].includes(item.status))
+        .slice(0, 5);
 
     return (
         <Painel
@@ -72,7 +78,9 @@ export default function OngSolicitacoes() {
             <Aviso tipo="sucesso">{sucesso}</Aviso>
 
             {carregando ? (
-                <p className="carregando">Carregando solicitações…</p>
+                <p className="carregando">
+                    Carregando solicitações...
+                </p>
             ) : emAndamento.length === 0 ? (
                 <EstadoVazio
                     titulo="Nenhuma solicitação em andamento"
@@ -89,15 +97,22 @@ export default function OngSolicitacoes() {
             ) : (
                 <div className="grade-cards">
                     {emAndamento.map((solicitacao) => (
-                        <article className="cartao" key={solicitacao.id}>
+                        <article
+                            className="cartao"
+                            key={solicitacao.id}
+                        >
                             <div className="cartao-doacao-topo">
                                 <div>
                                     <span className="selo-categoria">
                                         {solicitacao.estabelecimento}
                                     </span>
+
                                     <h2>{solicitacao.nome_alimento}</h2>
                                 </div>
-                                <EtiquetaStatus status={solicitacao.status} />
+
+                                <EtiquetaStatus
+                                    status={solicitacao.status}
+                                />
                             </div>
 
                             <ul className="meta cartao-doacao-meta">
@@ -108,22 +123,31 @@ export default function OngSolicitacoes() {
                                         solicitacao.unidade
                                     )}
                                 </li>
+
                                 <li>
                                     <strong>Retirada até:</strong>{' '}
-                                    {formatarDataHora(solicitacao.retirada_ate)}
+                                    {formatarDataHora(
+                                        solicitacao.retirada_ate
+                                    )}
                                 </li>
+
                                 <li>
                                     <strong>Endereço:</strong>{' '}
                                     {solicitacao.endereco_retirada || '—'}
                                 </li>
+
                                 {solicitacao.telefone && (
                                     <li>
-                                        <strong>Contato:</strong> {solicitacao.telefone}
+                                        <strong>Contato:</strong>{' '}
+                                        {solicitacao.telefone}
                                     </li>
                                 )}
+
                                 <li>
                                     <strong>Solicitado em:</strong>{' '}
-                                    {formatarDataHora(solicitacao.criado_em)}
+                                    {formatarDataHora(
+                                        solicitacao.criado_em
+                                    )}
                                 </li>
                             </ul>
 
@@ -138,11 +162,15 @@ export default function OngSolicitacoes() {
                                     <button
                                         type="button"
                                         className="botao botao-principal botao-pequeno"
-                                        onClick={() => confirmarRetirada(solicitacao)}
-                                        disabled={processando === solicitacao.id}
+                                        onClick={() =>
+                                            confirmarRetirada(solicitacao)
+                                        }
+                                        disabled={
+                                            processando === solicitacao.id
+                                        }
                                     >
                                         {processando === solicitacao.id
-                                            ? 'Confirmando…'
+                                            ? 'Confirmando...'
                                             : 'Confirmar retirada'}
                                     </button>
                                 ) : (
@@ -156,30 +184,45 @@ export default function OngSolicitacoes() {
                 </div>
             )}
 
-            {solicitacoes.length > 0 && (
+            {!carregando && solicitacoes.length > 0 && (
                 <section className="cartao historico-secao">
                     <div className="cartao-titulo">
                         <h2>Pedidos encerrados</h2>
-                        <Link to="/OngHistorico">Ver histórico completo</Link>
+
+                        <Link to="/OngHistorico">
+                            Ver histórico completo
+                        </Link>
                     </div>
 
-                    <ul className="lista-limpa">
-                        {solicitacoes
-                            .filter((item) => !['PENDENTE', 'ACEITA'].includes(item.status))
-                            .slice(0, 5)
-                            .map((solicitacao) => (
-                                <li className="linha-lista" key={solicitacao.id}>
+                    {encerradas.length === 0 ? (
+                        <p>Nenhum pedido encerrado ainda.</p>
+                    ) : (
+                        <ul className="lista-limpa">
+                            {encerradas.map((solicitacao) => (
+                                <li
+                                    className="linha-lista"
+                                    key={solicitacao.id}
+                                >
                                     <div className="linha-lista-info">
-                                        <h3>{solicitacao.nome_alimento}</h3>
+                                        <h3>
+                                            {solicitacao.nome_alimento}
+                                        </h3>
+
                                         <p>
                                             {solicitacao.estabelecimento} ·{' '}
-                                            {formatarDataHora(solicitacao.criado_em)}
+                                            {formatarDataHora(
+                                                solicitacao.criado_em
+                                            )}
                                         </p>
                                     </div>
-                                    <EtiquetaStatus status={solicitacao.status} />
+
+                                    <EtiquetaStatus
+                                        status={solicitacao.status}
+                                    />
                                 </li>
                             ))}
-                    </ul>
+                        </ul>
+                    )}
                 </section>
             )}
         </Painel>
