@@ -1,0 +1,187 @@
+import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import Painel from '../../components/painel';
+import Aviso from '../../components/aviso';
+import EstadoVazio from '../../components/estado-vazio';
+import EtiquetaStatus from '../../components/etiqueta-status';
+import { api } from '../../lib/api';
+import { formatarDataHora, formatarQuantidade } from '../../lib/formato';
+import { TIPO_ONG } from '../../lib/sessao';
+import useProtecao from '../../hooks/useProtecao';
+
+export default function OngSolicitacoes() {
+    useProtecao(TIPO_ONG);
+
+    const [solicitacoes, setSolicitacoes] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState('');
+    const [sucesso, setSucesso] = useState('');
+    const [processando, setProcessando] = useState(null);
+
+    const carregar = useCallback(async () => {
+        setCarregando(true);
+        setErro('');
+
+        try {
+            const dados = await api.minhasSolicitacoes();
+            setSolicitacoes(Array.isArray(dados) ? dados : []);
+        } catch (falha) {
+            setErro(falha.message);
+        } finally {
+            setCarregando(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        carregar();
+    }, [carregar]);
+
+    async function confirmarRetirada(solicitacao) {
+        setProcessando(solicitacao.id);
+        setErro('');
+        setSucesso('');
+
+        try {
+            await api.concluirSolicitacao(solicitacao.id);
+            setSucesso(
+                `Retirada de "${solicitacao.nome_alimento}" confirmada com sucesso!`
+            );
+            await carregar();
+        } catch (falha) {
+            setErro(falha.message);
+        } finally {
+            setProcessando(null);
+        }
+    }
+
+    const emAndamento = solicitacoes.filter((item) =>
+        ['PENDENTE', 'ACEITA'].includes(item.status)
+    );
+
+    return (
+        <Painel
+            titulo="Minhas solicitações"
+            subtitulo="Acompanhe o andamento dos pedidos feitos pela sua instituição."
+            acoes={
+                <Link to="/OngDoacoes" className="botao botao-principal">
+                    Buscar doações
+                </Link>
+            }
+        >
+            <Aviso tipo="erro">{erro}</Aviso>
+            <Aviso tipo="sucesso">{sucesso}</Aviso>
+
+            {carregando ? (
+                <p className="carregando">Carregando solicitações…</p>
+            ) : emAndamento.length === 0 ? (
+                <EstadoVazio
+                    titulo="Nenhuma solicitação em andamento"
+                    descricao="Solicite uma doação disponível para começar a acompanhar aqui."
+                    acao={
+                        <Link
+                            to="/OngDoacoes"
+                            className="botao botao-secundario botao-pequeno"
+                        >
+                            Ver doações disponíveis
+                        </Link>
+                    }
+                />
+            ) : (
+                <div className="grade-cards">
+                    {emAndamento.map((solicitacao) => (
+                        <article className="cartao" key={solicitacao.id}>
+                            <div className="cartao-doacao-topo">
+                                <div>
+                                    <span className="selo-categoria">
+                                        {solicitacao.estabelecimento}
+                                    </span>
+                                    <h2>{solicitacao.nome_alimento}</h2>
+                                </div>
+                                <EtiquetaStatus status={solicitacao.status} />
+                            </div>
+
+                            <ul className="meta cartao-doacao-meta">
+                                <li>
+                                    <strong>Quantidade:</strong>{' '}
+                                    {formatarQuantidade(
+                                        solicitacao.quantidade,
+                                        solicitacao.unidade
+                                    )}
+                                </li>
+                                <li>
+                                    <strong>Retirada até:</strong>{' '}
+                                    {formatarDataHora(solicitacao.retirada_ate)}
+                                </li>
+                                <li>
+                                    <strong>Endereço:</strong>{' '}
+                                    {solicitacao.endereco_retirada || '—'}
+                                </li>
+                                {solicitacao.telefone && (
+                                    <li>
+                                        <strong>Contato:</strong> {solicitacao.telefone}
+                                    </li>
+                                )}
+                                <li>
+                                    <strong>Solicitado em:</strong>{' '}
+                                    {formatarDataHora(solicitacao.criado_em)}
+                                </li>
+                            </ul>
+
+                            {solicitacao.mensagem && (
+                                <p className="cartao-doacao-observacao">
+                                    {solicitacao.mensagem}
+                                </p>
+                            )}
+
+                            <div className="rodape-cartao">
+                                {solicitacao.status === 'ACEITA' ? (
+                                    <button
+                                        type="button"
+                                        className="botao botao-principal botao-pequeno"
+                                        onClick={() => confirmarRetirada(solicitacao)}
+                                        disabled={processando === solicitacao.id}
+                                    >
+                                        {processando === solicitacao.id
+                                            ? 'Confirmando…'
+                                            : 'Confirmar retirada'}
+                                    </button>
+                                ) : (
+                                    <span className="solicitacao-aviso">
+                                        Aguardando a resposta do estabelecimento.
+                                    </span>
+                                )}
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            )}
+
+            {solicitacoes.length > 0 && (
+                <section className="cartao historico-secao">
+                    <div className="cartao-titulo">
+                        <h2>Pedidos encerrados</h2>
+                        <Link to="/OngHistorico">Ver histórico completo</Link>
+                    </div>
+
+                    <ul className="lista-limpa">
+                        {solicitacoes
+                            .filter((item) => !['PENDENTE', 'ACEITA'].includes(item.status))
+                            .slice(0, 5)
+                            .map((solicitacao) => (
+                                <li className="linha-lista" key={solicitacao.id}>
+                                    <div className="linha-lista-info">
+                                        <h3>{solicitacao.nome_alimento}</h3>
+                                        <p>
+                                            {solicitacao.estabelecimento} ·{' '}
+                                            {formatarDataHora(solicitacao.criado_em)}
+                                        </p>
+                                    </div>
+                                    <EtiquetaStatus status={solicitacao.status} />
+                                </li>
+                            ))}
+                    </ul>
+                </section>
+            )}
+        </Painel>
+    );
+}

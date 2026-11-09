@@ -1,0 +1,31 @@
+.dash-ong-impacto,
+.dash-ong-necessidades {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    h2 {
+        margin: 0 0 18px;
+        font-size: 19px;
+        font-weight: 700;
+        color: #244631;
+    }
+}
+
+.dash-ong-progresso-texto {
+    margin: 8px 0 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #6d7d70;
+}
+
+.dash-ong-meta {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.dash-ong-necessidades .cartao-texto {
+    margin-top: 0;
+    overflow-wrap: anywhere;
+}

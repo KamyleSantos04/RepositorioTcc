@@ -2,20 +2,32 @@ import { con } from '../database.js';
 
 export async function criarSolicitacao(doacaoId, instituicaoId, mensagem = '') {
     const [resultado] = await con.query(`
-        insert into solicitacoes (doacao_id, instituicao_id, mensagem, status)
+        insert into solicitacoes13 (doacao_id, instituicao_id, mensagem, status)
         values (?, ?, ?, 'PENDENTE')
     `, [doacaoId, instituicaoId, mensagem || null]);
     return resultado.insertId;
 }
 
+export async function buscarSolicitacaoAberta(doacaoId, instituicaoId) {
+    const [linhas] = await con.query(`
+        select id
+          from solicitacoes13
+         where doacao_id = ?
+           and instituicao_id = ?
+           and status in ('PENDENTE', 'ACEITA')
+    `, [doacaoId, instituicaoId]);
+    return linhas[0];
+}
+
 export async function listarMinhasSolicitacoes(instituicaoId) {
     const [linhas] = await con.query(`
         select s.id, s.mensagem, s.status, s.criado_em,
-               d.nome_alimento, d.quantidade, d.unidade, d.validade,
-               e.nome as estabelecimento, e.cidade, e.estado
-          from solicitacoes s
-          join doacoes d on d.id = s.doacao_id
-          join estabelecimentos e on e.id = d.estabelecimento_id
+               d.id as doacao_id, d.nome_alimento, d.quantidade, d.unidade,
+               d.validade, d.retirada_ate, d.endereco_retirada,
+               e.nome as estabelecimento, e.cidade, e.estado, e.telefone
+          from solicitacoes13 s
+          join doacoes13 d on d.id = s.doacao_id
+          join estabelecimentos13 e on e.id = d.estabelecimento_id
          where s.instituicao_id = ?
          order by s.criado_em desc
     `, [instituicaoId]);
@@ -25,11 +37,12 @@ export async function listarMinhasSolicitacoes(instituicaoId) {
 export async function listarRecebidas(estabelecimentoId) {
     const [linhas] = await con.query(`
         select s.id, s.mensagem, s.status, s.criado_em,
-               d.nome_alimento, d.quantidade, d.unidade,
-               i.nome as instituicao, i.cidade, i.estado
-          from solicitacoes s
-          join doacoes d on d.id = s.doacao_id
-          join instituicoes i on i.id = s.instituicao_id
+               d.id as doacao_id, d.nome_alimento, d.quantidade, d.unidade,
+               i.nome as instituicao, i.cidade, i.estado, i.telefone,
+               i.pessoas_atendidas
+          from solicitacoes13 s
+          join doacoes13 d on d.id = s.doacao_id
+          join instituicoes13 i on i.id = s.instituicao_id
          where d.estabelecimento_id = ?
          order by s.criado_em desc
     `, [estabelecimentoId]);
@@ -37,11 +50,142 @@ export async function listarRecebidas(estabelecimentoId) {
 }
 
 export async function atualizarStatus(id, estabelecimentoId, status) {
-    const [resultado] = await con.query(`
-        update solicitacoes s
-        join doacoes d on d.id = s.doacao_id
-           set s.status = ?
-         where s.id = ? and d.estabelecimento_id = ?
-    `, [status, id, estabelecimentoId]);
-    return resultado.affectedRows;
+    const conexao = await con.getConnection();
+
+    try {
+        await conexao.beginTransaction();
+
+        const [linhas] = await conexao.query(`
+            select s.id, s.doacao_id
+              from solicitacoes13 s
+              join doacoes13 d on d.id = s.doacao_id
+             where s.id = ? and d.estabelecimento_id = ?
+        `, [id, estabelecimentoId]);
+
+        const solicitacao = linhas[0];
+        if (!solicitacao) {
+            await conexao.rollback();
+            return 0;
+        }
+
+        await conexao.query(`
+            update solicitacoes13
+               set status = ?, atualizado_em = current_timestamp
+             where id = ?
+        `, [status, id]);
+
+        if (status === 'ACEITA') {
+            await conexao.query(`
+                update doacoes13 set status = 'RESERVADA' where id = ?
+            `, [solicitacao.doacao_id]);
+
+            await conexao.query(`
+                update solicitacoes13
+                   set status = 'RECUSADA', atualizado_em = current_timestamp
+                 where doacao_id = ?
+                   and id <> ?
+                   and status = 'PENDENTE'
+            `, [solicitacao.doacao_id, id]);
+        }
+
+        if (status === 'RECUSADA') {
+            const [restantes] = await conexao.query(`
+                select count(*) as total
+                  from solicitacoes13
+                 where doacao_id = ? and status = 'ACEITA'
+            `, [solicitacao.doacao_id]);
+
+            if (Number(restantes[0].total) === 0) {
+                await conexao.query(`
+                    update doacoes13
+                       set status = 'DISPONIVEL'
+                     where id = ? and status = 'RESERVADA'
+                `, [solicitacao.doacao_id]);
+            }
+        }
+
+        await conexao.commit();
+        return 1;
+    } catch (erro) {
+        await conexao.rollback();
+        throw erro;
+    } finally {
+        conexao.release();
+    }
+}
+
+export async function resumoInstituicao(instituicaoId) {
+    const [linhas] = await con.query(`
+        select
+            (select count(*) from solicitacoes13
+              where instituicao_id = ?
+                and status = 'PENDENTE') as solicitacoes_pendentes,
+            (select count(*) from solicitacoes13
+              where instituicao_id = ?
+                and status = 'ACEITA') as solicitacoes_aceitas,
+            (select count(*) from solicitacoes13
+              where instituicao_id = ?
+                and status = 'CONCLUIDA') as solicitacoes_concluidas,
+            (select count(*) from solicitacoes13
+              where instituicao_id = ?
+                and status = 'RECUSADA') as solicitacoes_recusadas,
+            (select coalesce(sum(d.quantidade), 0)
+               from solicitacoes13 s
+               join doacoes13 d on d.id = s.doacao_id
+              where s.instituicao_id = ?
+                and s.status = 'CONCLUIDA') as quantidade_recebida,
+            (select count(distinct d.estabelecimento_id)
+               from solicitacoes13 s
+               join doacoes13 d on d.id = s.doacao_id
+              where s.instituicao_id = ?
+                and s.status in ('ACEITA', 'CONCLUIDA')) as estabelecimentos_parceiros
+    `, Array(6).fill(instituicaoId));
+
+    return linhas[0];
+}
+
+export async function concluirSolicitacao(id, instituicaoId) {
+    const conexao = await con.getConnection();
+
+    try {
+        await conexao.beginTransaction();
+
+        const [linhas] = await conexao.query(`
+            select id, doacao_id
+              from solicitacoes13
+             where id = ? and instituicao_id = ? and status = 'ACEITA'
+        `, [id, instituicaoId]);
+
+        const solicitacao = linhas[0];
+        if (!solicitacao) {
+            await conexao.rollback();
+            return 0;
+        }
+
+        await conexao.query(`
+            update solicitacoes13
+               set status = 'CONCLUIDA', atualizado_em = current_timestamp
+             where id = ?
+        `, [id]);
+
+        await conexao.query(`
+            update doacoes13 set status = 'CONCLUIDA' where id = ?
+        `, [solicitacao.doacao_id]);
+
+        await conexao.query(`
+            update solicitacoes13
+               set status = 'RECUSADA', atualizado_em = current_timestamp
+             where doacao_id = ?
+               and id <> ?
+               and status = 'PENDENTE'
+        `, [solicitacao.doacao_id, id]);
+
+        await conexao.commit();
+        return 1;
+    } catch (erro) {
+        await conexao.rollback();
+        throw erro;
+    } finally {
+        conexao.release();
+    }
 }

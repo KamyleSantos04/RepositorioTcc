@@ -1,230 +1,290 @@
-
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Painel from '../../components/painel';
+import Aviso from '../../components/aviso';
+import { api } from '../../lib/api';
+import { TIPO_ESTABELECIMENTO } from '../../lib/sessao';
+import useProtecao from '../../hooks/useProtecao';
 import './index.scss';
-import { Link } from 'react-router-dom';
+
+const CATEGORIAS = [
+    'Frutas',
+    'Verduras e legumes',
+    'Grãos e cereais',
+    'Laticínios',
+    'Carnes',
+    'Pães e padaria',
+    'Alimentos preparados',
+    'Bebidas',
+    'Outros'
+];
+
+const UNIDADES = [
+    'Unidades',
+    'Kg',
+    'Gramas',
+    'Litros',
+    'Pacotes',
+    'Caixas',
+    'Cestas'
+];
+
+const FORMULARIO_INICIAL = {
+    nomeAlimento: '',
+    categoria: '',
+    quantidade: '',
+    unidade: '',
+    validade: '',
+    retiradaAte: '',
+    enderecoRetirada: '',
+    observacoes: ''
+};
 
 export default function CadastrarAlimento() {
-  return (
-    <div className="pagina-cadastro">
+    useProtecao(TIPO_ESTABELECIMENTO);
 
-      {/* MENU LATERAL */}
-      <aside className="menu-lateral">
+    const navegar = useNavigate();
+    const [dados, setDados] = useState(FORMULARIO_INICIAL);
+    const [erro, setErro] = useState('');
+    const [sucesso, setSucesso] = useState('');
+    const [enviando, setEnviando] = useState(false);
 
-        <div className="logo">
-          <img
-            src=""
-            alt=""
-            width="150"
-            height="65"
-          />
-        </div>
+    function alterar(event) {
+        const { name, value } = event.target;
+        setDados((atual) => ({ ...atual, [name]: value }));
+    }
 
-        <nav>
-          <Link to="/">
-            <img src="" alt="" />
-            Início
-          </Link>
+    function limpar() {
+        setDados(FORMULARIO_INICIAL);
+        setErro('');
+        setSucesso('');
+    }
 
-          <Link to="/minhasdoacoes">
-            <img src="" alt="" />
-            minhas doações
-          </Link>
+    async function publicar(event) {
+        event.preventDefault();
+        setErro('');
+        setSucesso('');
+        setEnviando(true);
 
-          <Link to="/solicitacoes">
-            <img src="" alt="" />
-            Solicitações
-          </Link>
+        try {
+            await api.criarDoacao({
+                nomeAlimento: dados.nomeAlimento.trim(),
+                categoria: dados.categoria || null,
+                quantidade: Number(dados.quantidade),
+                unidade: dados.unidade,
+                validade: dados.validade || null,
+                retiradaAte: dados.retiradaAte
+                    ? dados.retiradaAte.replace('T', ' ')
+                    : null,
+                enderecoRetirada: dados.enderecoRetirada.trim(),
+                observacoes: dados.observacoes.trim() || null
+            });
 
-          <Link to="/historico">
-            <img src="" alt="" />
-            Histórico
-          </Link>
+            setDados(FORMULARIO_INICIAL);
+            setSucesso('Doação publicada! Ela já está visível para as instituições.');
+        } catch (falha) {
+            setErro(falha.message);
+        } finally {
+            setEnviando(false);
+        }
+    }
 
-          <Link to="/estabelecimento">
-            <img src="" alt="" />
-            Meu Estabelecimento
-          </Link>
+    return (
+        <Painel
+            titulo="Cadastrar alimento"
+            subtitulo="Publique o excedente do seu estabelecimento e conecte-o a uma instituição que precisa."
+            acoes={
+                <Link to="/MinhasDoacoes" className="botao botao-claro">
+                    Minhas doações
+                </Link>
+            }
+        >
+            <Aviso tipo="erro">{erro}</Aviso>
+            <Aviso tipo="sucesso">{sucesso}</Aviso>
 
-          <Link to="/configuracoes">
-            <img src="" alt="" />
-            configurações
-          </Link>
-        </nav>
+            <section className="grade-duas">
+                <div className="cartao">
+                    <form className="formulario" onSubmit={publicar} noValidate={false}>
+                        <div className="formulario-grade">
+                            <div className="campo campo-largo">
+                                <label htmlFor="nomeAlimento">Alimento *</label>
+                                <input
+                                    id="nomeAlimento"
+                                    name="nomeAlimento"
+                                    type="text"
+                                    placeholder="Ex.: 30 pães franceses"
+                                    value={dados.nomeAlimento}
+                                    onChange={alterar}
+                                    maxLength={150}
+                                    required
+                                />
+                            </div>
 
-        <Link to="/sair" className="sair">
-          <img src="" alt="" />
-          Sair
-        </Link>
+                            <div className="campo">
+                                <label htmlFor="categoria">Categoria</label>
+                                <select
+                                    id="categoria"
+                                    name="categoria"
+                                    value={dados.categoria}
+                                    onChange={alterar}
+                                >
+                                    <option value="">Selecione</option>
+                                    {CATEGORIAS.map((categoria) => (
+                                        <option key={categoria} value={categoria}>
+                                            {categoria}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-      </aside>
+                            <div className="campo">
+                                <label htmlFor="unidade">Unidade *</label>
+                                <select
+                                    id="unidade"
+                                    name="unidade"
+                                    value={dados.unidade}
+                                    onChange={alterar}
+                                    required
+                                >
+                                    <option value="">Selecione</option>
+                                    {UNIDADES.map((unidade) => (
+                                        <option key={unidade} value={unidade}>
+                                            {unidade}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-      {/* CONTEÚDO PRINCIPAL */}
-      <main className="conteudo">
+                            <div className="campo">
+                                <label htmlFor="quantidade">Quantidade *</label>
+                                <input
+                                    id="quantidade"
+                                    name="quantidade"
+                                    type="number"
+                                    min="0.01"
+                                    step="0.01"
+                                    placeholder="Ex.: 30"
+                                    value={dados.quantidade}
+                                    onChange={alterar}
+                                    required
+                                />
+                            </div>
 
-        <div className="formulario-area">
+                            <div className="campo">
+                                <label htmlFor="validade">Validade</label>
+                                <input
+                                    id="validade"
+                                    name="validade"
+                                    type="date"
+                                    value={dados.validade}
+                                    onChange={alterar}
+                                />
+                            </div>
 
-          <Link to="/minhasdoacoes" className="voltar">
-            ← Voltar
-          </Link>
+                            <div className="campo">
+                                <label htmlFor="retiradaAte">
+                                    Retirada até
+                                </label>
+                                <input
+                                    id="retiradaAte"
+                                    name="retiradaAte"
+                                    type="datetime-local"
+                                    value={dados.retiradaAte}
+                                    onChange={alterar}
+                                />
+                                <span className="campo-ajuda">
+                                    Data e horário limite para a instituição buscar.
+                                </span>
+                            </div>
 
-          <h2>Cadastrar Alimento</h2>
+                            <div className="campo campo-largo">
+                                <label htmlFor="enderecoRetirada">
+                                    Local de retirada *
+                                </label>
+                                <input
+                                    id="enderecoRetirada"
+                                    name="enderecoRetirada"
+                                    type="text"
+                                    placeholder="Endereço completo com ponto de referência"
+                                    value={dados.enderecoRetirada}
+                                    onChange={alterar}
+                                    maxLength={300}
+                                    required
+                                />
+                            </div>
 
-          <form className="form-cadastro">
+                            <div className="campo campo-largo">
+                                <label htmlFor="observacoes">Observações</label>
+                                <textarea
+                                    id="observacoes"
+                                    name="observacoes"
+                                    placeholder="Ex.: produto aberto, manter refrigerado, retirar pelos fundos…"
+                                    value={dados.observacoes}
+                                    onChange={alterar}
+                                />
+                            </div>
+                        </div>
 
-            <div className="campo campo-tipo">
-              <label>Tipo de alimento *</label>
+                        <div className="acoes-formulario">
+                            <button
+                                type="submit"
+                                className="botao botao-principal"
+                                disabled={enviando}
+                            >
+                                {enviando ? 'Publicando…' : 'Publicar doação'}
+                            </button>
 
-              <select required defaultValue="">
-                <option value="" disabled>Selecione</option>
-                <option>Frutas</option>
-                <option>Verduras e legumes</option>
-                <option>Grãos e cereais</option>
-                <option>Laticínios</option>
-                <option>Carnes</option>
-                <option>Alimentos preparados</option>
-                <option>Outros</option>
-              </select>
-            </div>
+                            <button
+                                type="button"
+                                className="botao botao-secundario"
+                                onClick={limpar}
+                                disabled={enviando}
+                            >
+                                Limpar
+                            </button>
 
-            <div className="campo campo-descricao">
-              <label>Descrição *</label>
+                            <button
+                                type="button"
+                                className="botao botao-claro"
+                                onClick={() => navegar('/MinhasDoacoes')}
+                            >
+                                Ver minhas doações
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
-              <textarea
-                placeholder="Ex.: 30 pães franceses"
-                required
-              />
-            </div>
+                <aside className="cartao cadastro-alimento-dica">
+                    <h2>Antes de publicar</h2>
 
-            <div className="linha">
+                    <ul className="cadastro-alimento-lista">
+                        <li>
+                            Descreva o alimento com clareza: tipo, quantidade e estado
+                            de conservação.
+                        </li>
+                        <li>
+                            Informe um horário de retirada realista para facilitar o
+                            transporte pela instituição.
+                        </li>
+                        <li>
+                            Quanto mais completa a descrição, maior a chance de a
+                            doação ser solicitada rapidamente.
+                        </li>
+                        <li>
+                            Alimentos perecíveis devem ser publicados no mesmo dia da
+                            produção.
+                        </li>
+                    </ul>
 
-              <div className="campo">
-                <label>Quantidade *</label>
-
-                <input
-                  type="number"
-                  min="1"
-                  placeholder="Ex.: 30"
-                  required
-                />
-              </div>
-
-              <div className="campo">
-                <label>Unidade *</label>
-
-                <select required defaultValue="">
-                  <option value="" disabled>Selecione</option>
-                  <option>Unidades</option>
-                  <option>Kg</option>
-                  <option>Gramas</option>
-                  <option>Litros</option>
-                  <option>Pacotes</option>
-                  <option>Caixas</option>
-                </select>
-              </div>
-
-            </div>
-
-            <div className="linha">
-
-              <div className="campo">
-                <label>Data de produção *</label>
-                <input type="date" required />
-              </div>
-
-              <div className="campo">
-                <label>Prazo/validade *</label>
-                <input type="date" required />
-              </div>
-
-            </div>
-
-            <div className="campo campo-aberto">
-
-              <label>O alimento está aberto?</label>
-
-              <div className="opcoes">
-
-                <label>
-                  <input type="radio" name="aberto" value="sim" />
-                  Sim
-                </label>
-
-                <label>
-                  <input type="radio" name="aberto" value="nao" />
-                  Não
-                </label>
-
-              </div>
-            </div>
-
-            <div className="linha linha-inferior">
-
-              <div className="campo">
-                <label>Forma de armazenamento *</label>
-
-                <select required defaultValue="">
-                  <option value="" disabled>Selecione</option>
-                  <option>Temperatura ambiente</option>
-                  <option>Refrigerado</option>
-                  <option>Congelado</option>
-                </select>
-              </div>
-
-              <div className="campo">
-                <label>Horário limite para retirada *</label>
-                <input type="time" required />
-              </div>
-
-            </div>
-
-            <div className="campo campo-local">
-              <label>Local de retirada *</label>
-
-              <input
-                type="text"
-                placeholder="Endereço completo"
-                required
-              />
-            </div>
-
-            <div className="botoes">
-
-              <button type="reset" className="cancelar">
-                Cancelar
-              </button>
-
-              <button type="submit" className="publicar">
-                Publicar doação
-              </button>
-
-            </div>
-
-          </form>
-        </div>
-
-        {/* QUADRO DE DICA */}
-        <aside className="dica">
-
-          <div className="dica-texto">
-
-            <h3>
-              <img src="" alt="" />
-              Dica
-            </h3>
-
-            <p>
-              Quanto mais informações você preencher,
-              maior a chance de obter a melhor oportunidade.
-            </p>
-
-          </div>
-
-          <div className="foto-dica">
-            FOTO_CAIXA_DE_ALIMENTOS
-          </div>
-
-        </aside>
-
-      </main>
-    </div>
-  );
+                    <div className="cadastro-alimento-rodape">
+                        <p>
+                            Precisa ajustar algo já publicado? Use a página{' '}
+                            <Link to="/MinhasDoacoes">Minhas doações</Link> para
+                            alterar o status ou remover o registro.
+                        </p>
+                    </div>
+                </aside>
+            </section>
+        </Painel>
+    );
 }
