@@ -1,0 +1,845 @@
+// ============================================================
+// Estrutura dos dashboards (estabelecimento e ONG/instituição)
+// Paleta do Conecta-Alimento:
+//   verde escuro  #315c42   verde hover #477653
+//   bege          #f5f0e8   cartão      #fffdf8
+//   terracota     #C44B30   texto       #244631
+// ============================================================
+
+.dash {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f0e8;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #263c2e;
+
+    * {
+        box-sizing: border-box;
+    }
+}
+
+// ------------------------------------------------------------
+// Faixa lateral (estabelecimento)
+// ------------------------------------------------------------
+
+.dash-lateral {
+    width: 270px;
+    min-height: 100vh;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #315c42;
+    padding: 25px 16px;
+}
+
+.dash-lateral-logo {
+    display: block;
+    width: 145px;
+    height: 125px;
+    margin: 0 auto 25px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+.dash-lateral-itens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.dash-lateral-item,
+.dash-lateral-sair {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+
+    img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    h1,
+    span {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: inherit;
+        color: #fffdf8;
+        line-height: 1.4;
+    }
+
+    &:hover {
+        background-color: #477653;
+        transform: translateX(3px);
+    }
+
+    &.ativo {
+        background-color: #477653;
+
+        h1 {
+            font-weight: 700;
+        }
+    }
+}
+
+.dash-lateral-sair {
+    margin-top: auto;
+
+    &:hover span {
+        color: #ffe2d9;
+    }
+}
+
+// ------------------------------------------------------------
+// Faixa superior (ONG / instituição)
+// ------------------------------------------------------------
+
+.dash-topo-var {
+    flex-direction: column;
+}
+
+.dash-topo {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    flex-wrap: wrap;
+    padding: 12px 34px;
+    background-color: #315c42;
+}
+
+.dash-topo-logo {
+    display: block;
+    flex-shrink: 0;
+    width: 92px;
+    height: 74px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+.dash-topo-itens {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.dash-topo-item {
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #eaf2e6;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.25s ease, color 0.25s ease;
+
+    &:hover {
+        background-color: #477653;
+        color: #ffffff;
+    }
+
+    &.ativo {
+        background-color: #477653;
+        color: #ffffff;
+        font-weight: 700;
+    }
+}
+
+.dash-topo-sair-linha {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 34px 0;
+}
+
+.dash-topo-sair {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 18px;
+    border: 1px solid #c9d5c4;
+    border-radius: 8px;
+    background-color: #fffdf8;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: #315c42;
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+
+    img {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+    }
+
+    &:hover {
+        background-color: #f1e9dc;
+        border-color: #a9bda4;
+    }
+}
+
+// ------------------------------------------------------------
+// Conteúdo
+// ------------------------------------------------------------
+
+.dash-conteudo {
+    flex: 1;
+    min-width: 0;
+    padding: 38px;
+}
+
+.dash-topo-var .dash-conteudo {
+    padding: 26px 34px 46px;
+}
+
+.dash-cabecalho {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+
+    h1 {
+        margin: 0 0 9px;
+        font-size: 29px;
+        font-weight: 700;
+        color: #244631;
+        overflow-wrap: anywhere;
+    }
+
+    p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #718074;
+        max-width: 720px;
+    }
+}
+
+.dash-cabecalho-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+// Cartões de resumo
+
+.dash-cartoes {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.dash-cartao {
+    min-height: 132px;
+    padding: 23px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 9px;
+    border: 1px solid rgba(49, 92, 66, 0.08);
+    border-radius: 15px;
+    box-shadow: 0 4px 14px rgba(37, 60, 43, 0.05);
+    background-color: #fffdf8;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    text-decoration: none;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(37, 60, 43, 0.09);
+    }
+
+    h2 {
+        margin: 0;
+        font-size: 29px;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    &.verde {
+        background-color: #e5eee1;
+        color: #315c42;
+    }
+
+    &.terracota {
+        background-color: #f7e8df;
+        color: #a6533d;
+    }
+
+    &.areia {
+        background-color: #f5ebd5;
+        color: #91651f;
+    }
+
+    &.oliva {
+        background-color: #e6edda;
+        color: #527345;
+    }
+}
+
+// Painéis brancos
+
+.dash-painel {
+    padding: 24px;
+    background-color: #fffdf8;
+    border: 1px solid #e8e2d8;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(37, 60, 43, 0.04);
+    margin-bottom: 22px;
+
+    > h2 {
+        margin: 0 0 18px;
+        font-size: 19px;
+        font-weight: 700;
+        color: #244631;
+    }
+}
+
+.dash-painel-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #eee8df;
+
+    h2 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 700;
+        color: #244631;
+    }
+
+    a {
+        color: #477653;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.dash-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(240px, 0.9fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.dash-grade-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.dash-grade-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 20px;
+}
+
+// Lista de itens (doações recentes, solicitações…)
+
+.dash-lista {
+    display: flex;
+    flex-direction: column;
+}
+
+.dash-linha {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee8df;
+    text-decoration: none;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.dash-linha-info {
+    flex: 1;
+    min-width: 0;
+
+    h3 {
+        margin: 0 0 6px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #303f33;
+        overflow-wrap: anywhere;
+    }
+
+    p {
+        margin: 0;
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #7a817a;
+    }
+}
+
+// Etiquetas de status
+
+.dash .status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dash .status-disponivel,
+.dash .status-concluida,
+.dash .status-aceita {
+    background-color: #e1f1df;
+    color: #327044;
+}
+
+.dash .status-pendente,
+.dash .status-reservada {
+    background-color: #fbe8e0;
+    color: #b84b38;
+}
+
+.dash .status-recusada,
+.dash .status-cancelada {
+    background-color: #efe9e1;
+    color: #8a6a4f;
+}
+
+// Detalhes em lista (chave/valor)
+
+.dash .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+    color: #68776b;
+}
+
+.dash .cartao {
+    padding: 22px;
+    background-color: #fffdf8;
+    border: 1px solid #e8e2d8;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(37, 60, 43, 0.04);
+}
+
+// Botões
+
+.dash-botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #315c42;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+
+    &:hover:not(:disabled) {
+        background-color: #244631;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.dash-botao-claro {
+    background-color: #fffdf8;
+    border: 1px solid #496147;
+    color: #2f4f37;
+
+    &:hover:not(:disabled) {
+        background-color: #eff3ea;
+    }
+}
+
+.dash-botao-secundario {
+    background-color: #f3e5df;
+    color: #a6533d;
+
+    &:hover:not(:disabled) {
+        background-color: #ead1c7;
+    }
+}
+
+.dash-botao-perigo {
+    background-color: #c44b30;
+
+    &:hover:not(:disabled) {
+        background-color: #a53d26;
+    }
+}
+
+.dash-botao-pequeno {
+    padding: 8px 13px;
+    font-size: 12.5px;
+}
+
+.dash-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+// Formulários
+
+.dash-form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dash-form-grade {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 18px;
+}
+
+.dash-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+
+    label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #315c42;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #d9ded5;
+        border-radius: 8px;
+        background-color: #ffffff;
+        font-family: inherit;
+        font-size: 14px;
+        color: #263c2e;
+        outline: none;
+
+        &:focus {
+            border-color: #477653;
+        }
+    }
+
+    textarea {
+        min-height: 84px;
+        resize: vertical;
+    }
+}
+
+.dash-campo-largo {
+    grid-column: 1 / -1;
+}
+
+.dash-ajuda {
+    font-size: 12px;
+    color: #839286;
+}
+
+// Tabela simples (histórico)
+
+.dash-tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+
+    th {
+        padding: 10px 12px;
+        border-bottom: 1px solid #e8e2d8;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: #7b8a7e;
+    }
+
+    td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #f1ece3;
+        color: #3c4d40;
+        overflow-wrap: anywhere;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+// Estados auxiliares
+
+.dash-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 42px 22px;
+    text-align: center;
+
+    h2 {
+        margin: 0;
+        font-size: 17px;
+        color: #315c42;
+    }
+
+    p {
+        margin: 0;
+        max-width: 460px;
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: #7b8a7e;
+    }
+}
+
+.dash-carregando {
+    padding: 26px 4px;
+    font-size: 14px;
+    color: #718074;
+}
+
+.dash-busca {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    input {
+        flex: 1;
+        min-width: 220px;
+        padding: 12px 14px;
+        border: 1px solid #d9ded5;
+        border-radius: 8px;
+        background-color: #ffffff;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+
+        &:focus {
+            border-color: #477653;
+        }
+    }
+
+    span {
+        font-size: 13px;
+        color: #718074;
+    }
+}
+
+// Barra de progresso do "Seu impacto"
+
+.dash-barra {
+    height: 10px;
+    border-radius: 6px;
+    background-color: #e6e9e0;
+    overflow: hidden;
+
+    > span {
+        display: block;
+        height: 100%;
+        border-radius: 6px;
+        background: linear-gradient(to right, #315c42, #76a47b);
+    }
+}
+
+// ------------------------------------------------------------
+// Telas menores
+// ------------------------------------------------------------
+
+@media (max-width: 1200px) {
+    .dash-lateral {
+        width: 235px;
+    }
+
+    .dash-conteudo {
+        padding: 28px;
+    }
+
+    .dash-cartoes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dash-grade {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .dash-lateral {
+        width: 200px;
+        padding: 20px 10px;
+    }
+
+    .dash-lateral-item,
+    .dash-lateral-sair {
+        gap: 9px;
+        padding: 10px 8px;
+
+        h1,
+        span {
+            font-size: 12px;
+        }
+    }
+
+    .dash-topo {
+        gap: 18px;
+        padding: 12px 18px;
+    }
+
+    .dash-topo-var .dash-conteudo {
+        padding: 22px 18px 40px;
+    }
+
+    .dash-grade-2,
+    .dash-form-grade {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .dash {
+        flex-direction: column;
+    }
+
+    .dash-lateral {
+        width: 100%;
+        min-height: auto;
+        padding: 12px;
+    }
+
+    .dash-lateral-logo {
+        width: 100px;
+        height: 75px;
+        margin-bottom: 12px;
+    }
+
+    .dash-lateral-itens {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .dash-lateral-item,
+    .dash-lateral-sair {
+        min-height: 42px;
+        margin: 0;
+
+        img {
+            width: 20px;
+            height: 20px;
+        }
+
+        h1,
+        span {
+            font-size: 11px;
+        }
+    }
+
+    .dash-conteudo {
+        padding: 20px 14px;
+    }
+
+    .dash-topo-itens {
+        gap: 2px;
+    }
+
+    .dash-topo-item {
+        padding: 8px 10px;
+        font-size: 12.5px;
+    }
+
+    .dash-topo-sair-linha {
+        padding: 12px 16px 0;
+        justify-content: flex-start;
+    }
+
+    .dash-cabecalho h1 {
+        font-size: 23px;
+    }
+
+    .dash-cartoes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .dash-cartao {
+        min-height: 108px;
+        padding: 15px 12px;
+
+        h2 {
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 12px;
+        }
+    }
+
+    .dash-painel {
+        padding: 17px 13px;
+    }
+
+    .dash-tabela {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import * as dbSolicitacao from '../repository/solicitacaoRepository.js';
-import * as dbDoacao from '../repository/doacaoRepository.js';
 import { autenticar, permitirTipo } from '../middleware/autenticar.js';
 
 const endpoints = Router();
@@ -19,33 +18,26 @@ endpoints.post(
         }
 
         try {
-            const doacao = await dbDoacao.buscarDoacao(doacaoId);
-
-            if (!doacao || doacao.status !== 'DISPONIVEL') {
-                return res.status(404).json({
-                    erro: 'Esta doação não está disponível.'
-                });
-            }
-
-            const existente = await dbSolicitacao.buscarSolicitacaoAberta(
-                doacaoId,
-                req.usuario.perfilId
-            );
-
-            if (existente) {
-                return res.status(409).json({
-                    erro: 'Sua instituição já solicitou esta doação.'
-                });
-            }
-
-            const id = await dbSolicitacao.criarSolicitacao(
+            const resultado = await dbSolicitacao.criarSolicitacaoAtomica(
                 doacaoId,
                 req.usuario.perfilId,
                 mensagem
             );
 
+            if (resultado.motivo === 'INDISPONIVEL') {
+                return res.status(404).json({
+                    erro: 'Esta doação não está disponível.'
+                });
+            }
+
+            if (resultado.motivo === 'DUPLICADA') {
+                return res.status(409).json({
+                    erro: 'Sua instituição já solicitou esta doação.'
+                });
+            }
+
             res.status(201).json({
-                id,
+                id: resultado.id,
                 mensagem: 'Solicitação enviada ao estabelecimento!'
             });
         } catch (erro) {
@@ -105,6 +97,12 @@ endpoints.put(
                 req.params.id,
                 req.usuario.perfilId
             );
+
+            if (qtd === -1) {
+                return res.status(409).json({
+                    erro: 'Esta solicitação já foi respondida ou a doação não está mais disponível.'
+                });
+            }
 
             if (!qtd) {
                 return res.status(404).json({

@@ -1,10 +1,19 @@
-
 import './index.scss'
+import { useState } from 'react'
 import {
     Link,
     useNavigate,
     useSearchParams
 } from 'react-router-dom'
+import { api } from '../../lib/api'
+import {
+    rotaInicial,
+    rotaPorOrigem,
+    salvarSessao,
+    tipoPorOrigem,
+    TIPO_ESTABELECIMENTO,
+    TIPO_ONG
+} from '../../lib/sessao'
 
 export default function Entrar() {
 
@@ -13,16 +22,45 @@ export default function Entrar() {
     const [parametros] = useSearchParams()
 
     const origem = parametros.get('origem')
+    const destinoPedido = parametros.get('destino')
+    const tipoSugerido = tipoPorOrigem(origem)
+
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [tipoConta, setTipoConta] = useState(tipoSugerido || '')
+    const [entrando, setEntrando] = useState(false)
+
+    /** Destino seguro: só aceita caminhos internos do próprio sistema. */
+    function destinoValido(tipo) {
+        if (destinoPedido && destinoPedido.startsWith('/')) {
+            const ehRotaDeOng = destinoPedido.startsWith('/DashONG')
+            const ehRotaDeEstabelecimento =
+                destinoPedido.startsWith('/DashEstabelecimento') ||
+                destinoPedido.startsWith('/MinhasDoacoes') ||
+                destinoPedido.startsWith('/Solicitacoes') ||
+                destinoPedido.startsWith('/Historico') ||
+                destinoPedido.startsWith('/MeusEstabelecimentos') ||
+                destinoPedido.startsWith('/PerfilEstabelecimento') ||
+                destinoPedido.startsWith('/Configuracao')
+
+            if (tipo === TIPO_ONG && ehRotaDeOng) return destinoPedido
+            if (tipo === TIPO_ESTABELECIMENTO && ehRotaDeEstabelecimento) {
+                return destinoPedido
+            }
+        }
+
+        // A rota de cadastro de alimento é compartilhada e só faz sentido
+        // para estabelecimentos.
+        if (destinoPedido === '/CadastrarAlimento') {
+            return tipo === TIPO_ESTABELECIMENTO ? destinoPedido : null
+        }
+
+        return null
+    }
 
     async function entrar(event) {
 
         event.preventDefault()
-
-        const email = document.querySelector('.entrar input[type="text"]').value
-
-        const senha = document.querySelector('.entrar input[type="password"]').value
-
-        const tipoConta = document.querySelector('.entrar select').value
 
         if (!email || !senha) {
             alert('Preencha o e-mail e a senha!')
@@ -34,25 +72,11 @@ export default function Entrar() {
             return
         }
 
+        setEntrando(true)
+
         try {
 
-            const resposta = await fetch(
-                'http://localhost:3001/api/auth/login',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, senha })
-                }
-            )
-
-            const resultado = await resposta.json()
-
-            if (!resposta.ok) {
-                alert(resultado.erro || 'E-mail ou senha incorretos.')
-                return
-            }
+            const resultado = await api.login(email.trim(), senha)
 
             const tipo = resultado.tipo
 
@@ -66,83 +90,35 @@ export default function Entrar() {
                 return
             }
 
-            // Define o destino conforme o botão utilizado na página inicial.
-
-            let destino = null
-
-            if (origem === 'doar') {
-
-                if (tipo !== 'ESTABELECIMENTO') {
-                    alert('Para doar alimentos, entre com uma conta de estabelecimento doador.')
-                    return
-                }
-
-                destino = '/CadastrarAlimento'
-
-            } else if (origem === 'receber') {
-
-                if (tipo !== 'ONG') {
-                    alert('Para solicitar alimentos, entre com uma conta de ONG ou instituição.')
-                    return
-                }
-
-                destino = '/Doacoes'
-
-            }
-
-            // Salva os dados somente depois de validar o tipo de conta.
-
-            sessionStorage.setItem(
-                'tokenConectaAlimento',
-                resultado.token
-            )
-
-            sessionStorage.setItem(
-                'tipoContaConectaAlimento',
-                tipo
-            )
-
-            sessionStorage.setItem(
-                'perfilId',
-                resultado.perfilId
-            )
-
-            sessionStorage.setItem(
-                'nomeContaConectaAlimento',
-                resultado.nome || ''
-            )
-
-            // Redireciona conforme a escolha inicial.
-
-            if (destino) {
-                navegar(destino)
+            // Valida o destino do botão usado na página inicial
+            // antes de gravar a sessão.
+            if (origem === 'doar' && tipo !== TIPO_ESTABELECIMENTO) {
+                alert('Para doar alimentos, entre com uma conta de estabelecimento doador.')
                 return
             }
 
-            // Mantém o comportamento original para quem
-            // acessa o login pelo menu superior.
-
-            if (tipo === 'ESTABELECIMENTO') {
-
-                navegar('/DashEstabelecimento')
-
-            } else if (tipo === 'ONG') {
-
-                navegar('/DashONG')
-
-            } else {
-
-                alert('Tipo de conta não reconhecido.')
-
+            if (origem === 'receber' && tipo !== TIPO_ONG) {
+                alert('Para solicitar alimentos, entre com uma conta de ONG ou instituição.')
+                return
             }
+
+            salvarSessao(resultado)
+
+            const destino =
+                destinoValido(tipo) ||
+                (origem ? rotaPorOrigem(origem) : null)
+
+            navegar(destino || rotaInicial(tipo), { replace: true })
 
         } catch (erro) {
 
             console.error('Erro no login:', erro)
 
-            alert(
-                'Não foi possível conectar ao servidor. Confira se o backend está ligado na porta 3001.'
-            )
+            alert(erro.message || 'Não foi possível realizar o login.')
+
+        } finally {
+
+            setEntrando(false)
 
         }
     }
@@ -181,6 +157,8 @@ export default function Entrar() {
                         <input
                             type='text'
                             placeholder='Digite seu e-mail'
+                            value={email}
+                            onChange={(evento) => setEmail(evento.target.value)}
                             required
                         />
 
@@ -193,6 +171,8 @@ export default function Entrar() {
                         <input
                             type='password'
                             placeholder='Digite sua senha'
+                            value={senha}
+                            onChange={(evento) => setSenha(evento.target.value)}
                             required
                         />
 
@@ -202,7 +182,11 @@ export default function Entrar() {
 
                         <h2>Tipo de conta</h2>
 
-                        <select defaultValue='' required>
+                        <select
+                            value={tipoConta}
+                            onChange={(evento) => setTipoConta(evento.target.value)}
+                            required
+                        >
 
                             <option value='' disabled>
                                 Selecione sua conta
@@ -224,8 +208,8 @@ export default function Entrar() {
                         Esqueceu a senha?
                     </p>
 
-                    <button className='botaoum' type='submit'>
-                        Entrar
+                    <button className='botaoum' type='submit' disabled={entrando}>
+                        {entrando ? 'Entrando...' : 'Entrar'}
                     </button>
 
                 </form>

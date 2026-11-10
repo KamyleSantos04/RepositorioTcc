@@ -1,11 +1,37 @@
-
 import './index.scss'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'
+import {
+    lerSessao,
+    rotaLogin,
+    rotaPorOrigem,
+    tipoPorOrigem
+} from '../../lib/sessao'
 
 export default function Inicio() {
+  const navegar = useNavigate()
+
+  /**
+   * Botões "Quero doar" e "Preciso de alimentos".
+   *
+   * - Já autenticado com o tipo certo: vai direto para a página.
+   * - Sem sessão (ou sessão de outro tipo): vai para o login já com o
+   *   tipo de conta pré-selecionado e com o destino preservado.
+   */
+  function escolher(origem) {
+    const destino = rotaPorOrigem(origem)
+    const sessao = lerSessao()
+
+    if (sessao && sessao.tipo === tipoPorOrigem(origem)) {
+      navegar(destino)
+      return
+    }
+
+    navegar(rotaLogin(destino, origem))
+  }
+
   return (
     <div className="principal">
-      
+
       <section className='cima'>
         <img className="logo" src='./assets/images/logo.png' alt='' width={110}></img>
 
@@ -21,7 +47,7 @@ export default function Inicio() {
         <Link to='/Criar'>
           <button className='dois'>Criar conta</button>
         </Link>
-      </section>  
+      </section>
 
       <div className="maior">
         <section className='texto'>
@@ -45,17 +71,21 @@ export default function Inicio() {
 
       <section className='botoes'>
 
-        <Link to='/Entrar?origem=doar'>
-          <button className='doar'>
-            Quero doar
-          </button>
-        </Link>
+        <button
+          type='button'
+          className='doar'
+          onClick={() => escolher('doar')}
+        >
+          Quero doar
+        </button>
 
-        <Link to='/Entrar?origem=receber'>
-          <button className='doardois'>
-            Preciso de alimentos
-          </button>
-        </Link>
+        <button
+          type='button'
+          className='doardois'
+          onClick={() => escolher('receber')}
+        >
+          Preciso de alimentos
+        </button>
 
       </section>
 

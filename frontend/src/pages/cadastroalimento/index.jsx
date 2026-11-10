@@ -42,7 +42,7 @@ const FORMULARIO_INICIAL = {
 };
 
 export default function CadastrarAlimento() {
-    useProtecao(TIPO_ESTABELECIMENTO);
+    const sessao = useProtecao(TIPO_ESTABELECIMENTO);
 
     const navegar = useNavigate();
     const [dados, setDados] = useState(FORMULARIO_INICIAL);
@@ -89,6 +89,8 @@ export default function CadastrarAlimento() {
             setEnviando(false);
         }
     }
+
+    if (!sessao) return null;
 
     return (
         <Painel

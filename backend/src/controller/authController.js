@@ -2,6 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import * as dbUsuario from '../repository/usuarioRepository.js';
+import { con } from '../database.js';
 
 const endpoints = Router();
 
@@ -53,13 +54,35 @@ async function cadastrar(req, res, tipo) {
         if (existente) return res.status(409).json({ erro: 'Este e-mail já está cadastrado.' });
 
         const senhaHash = await bcrypt.hash(dados.senha, 10);
-        const usuarioId = await dbUsuario.criarUsuario({ email: dados.email, senhaHash, tipo });
+        const conexao = await con.getConnection();
+        let usuarioId;
         let perfilId;
 
-        if (tipo === 'ONG') {
-            perfilId = await dbUsuario.criarInstituicao({ ...dados, usuarioId });
-        } else {
-            perfilId = await dbUsuario.criarEstabelecimento({ ...dados, usuarioId });
+        try {
+            await conexao.beginTransaction();
+            usuarioId = await dbUsuario.criarUsuario(
+                { email: dados.email.trim(), senhaHash, tipo },
+                conexao
+            );
+
+            if (tipo === 'ONG') {
+                perfilId = await dbUsuario.criarInstituicao(
+                    { ...dados, usuarioId },
+                    conexao
+                );
+            } else {
+                perfilId = await dbUsuario.criarEstabelecimento(
+                    { ...dados, usuarioId },
+                    conexao
+                );
+            }
+
+            await conexao.commit();
+        } catch (erro) {
+            await conexao.rollback();
+            throw erro;
+        } finally {
+            conexao.release();
         }
 
         res.status(201).json({ mensagem: 'Cadastro realizado com sucesso!', usuarioId, perfilId, tipo });

@@ -1,27 +1,22 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { api } from '../../lib/api';
+import { formatarData, formatarQuantidade } from '../../lib/formato';
 import './index.scss';
 
 export default function Doacoes() {
     const [doacoes, setDoacoes] = useState([]);
     const [busca, setBusca] = useState('');
+    const [erro, setErro] = useState('');
 
     useEffect(() => {
         async function carregarDoacoes() {
             try {
-                const resposta = await fetch(
-                    'http://localhost:3001/api/doacoes'
-                );
-
-                if (!resposta.ok) {
-                    throw new Error('Erro ao carregar doações');
-                }
-
-                const dados = await resposta.json();
-                setDoacoes(Array.isArray(dados) ? dados : dados.doacoes || []);
-            } catch (erro) {
-                console.error('Erro ao buscar doações:', erro);
+                const dados = await api.listarDoacoesDisponiveis();
+                setDoacoes(Array.isArray(dados) ? dados : []);
+            } catch (falha) {
+                setErro(falha.message);
             }
         }
 
@@ -29,7 +24,7 @@ export default function Doacoes() {
     }, []);
 
     const doacoesFiltradas = doacoes.filter((doacao) =>
-        `${doacao.alimentos || doacao.nome || ''} 
+        `${doacao.nome_alimento || ''} 
         ${doacao.cidade || ''} 
         ${doacao.estado || ''} 
         ${doacao.descricao || ''}`
@@ -69,20 +64,19 @@ export default function Doacoes() {
                 />
 
                 <div className="lista-doacoes">
+                    {erro && <p className="sem-doacoes">{erro}</p>}
                     {doacoesFiltradas.length > 0 ? (
                         doacoesFiltradas.map((doacao) => (
                             <div className="card-doacao" key={doacao.id}>
                                 <div className="icone-doacao">♡</div>
 
                                 <h2>
-                                    {doacao.alimentos ||
-                                        doacao.nome ||
-                                        'Alimentos disponíveis'}
+                                    {doacao.nome_alimento || 'Alimentos disponíveis'}
                                 </h2>
 
                                 <p>
                                     <strong>Quantidade:</strong>{' '}
-                                    {doacao.quantidade || 'Não informada'}
+                                    {formatarQuantidade(doacao.quantidade, doacao.unidade)}
                                 </p>
 
                                 <p>
@@ -93,16 +87,14 @@ export default function Doacoes() {
                                 </p>
 
                                 <p>
-                                    {doacao.descricao ||
+                                    {doacao.observacoes ||
                                         'Alimentos disponíveis para ajudar instituições.'}
                                 </p>
 
                                 {doacao.validade && (
                                     <p>
                                         <strong>Validade:</strong>{' '}
-                                        {new Date(
-                                            `${String(doacao.validade).slice(0, 10)}T12:00:00`
-                                        ).toLocaleDateString('pt-BR')}
+                                        {formatarData(doacao.validade)}
                                     </p>
                                 )}
                             </div>

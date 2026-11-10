@@ -28,10 +28,12 @@ export async function listarInstituicoes(busca = '') {
 }
 
 export async function buscarInstituicaoPorId(id) {
-    const [linhas] = await con.query(
-        'select * from instituicoes13 where id = ?',
-        [id]
-    );
+    const [linhas] = await con.query(`
+        select i.*, u.email
+          from instituicoes13 i
+          join usuarios u on u.id = i.usuario_id
+         where i.id = ?
+    `, [id]);
     return linhas[0];
 }
 

@@ -132,6 +132,11 @@
     margin-top: 20px;
     margin-bottom: 0;
   }
+
+  .mensagem-sucesso.mensagem-erro {
+    background-color: #fce8e6;
+    color: #a12622;
+  }
 }
 
 @media (max-width: 600px) {

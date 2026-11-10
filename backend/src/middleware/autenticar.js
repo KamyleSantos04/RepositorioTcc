@@ -11,17 +11,28 @@ export function autenticar(req, res, next) {
 
     try {
         req.usuario = jwt.verify(token, process.env.JWT_SECRET);
-        next();
-    } catch (erro) {
-        return res.status(401).json({ erro: 'Sessão inválida. Entre novamente.' });
+        return next();
+    } catch {
+        return res
+            .status(401)
+            .json({ erro: 'Sessão inválida. Entre novamente.' });
     }
 }
 
-export function permitirTipo(tipo) {
+/**
+ * Restringe a rota a um ou mais tipos de conta.
+ * Aceita tanto `permitirTipo('ONG')` quanto
+ * `permitirTipo('ONG', 'ESTABELECIMENTO')`.
+ */
+export function permitirTipo(...tipos) {
+    const permitidos = tipos.flat();
+
     return (req, res, next) => {
-        if (req.usuario?.tipo !== tipo) {
-            return res.status(403).json({ erro: 'Você não tem permissão para acessar esta função.' });
+        if (!req.usuario || !permitidos.includes(req.usuario.tipo)) {
+            return res.status(403).json({
+                erro: 'Você não tem permissão para acessar esta função.'
+            });
         }
-        next();
+        return next();
     };
 }

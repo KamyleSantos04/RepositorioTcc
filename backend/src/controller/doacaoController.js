@@ -119,6 +119,12 @@ endpoints.put(
                 status
             );
 
+            if (qtd === -1) {
+                return res.status(409).json({
+                    erro: 'Esta doação já foi destinada a uma instituição e não pode voltar a ficar disponível.'
+                });
+            }
+
             if (!qtd) {
                 return res.status(404).json({
                     erro: 'Doação não encontrada para este estabelecimento.'

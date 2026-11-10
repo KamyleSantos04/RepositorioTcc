@@ -1,3 +1,5 @@
+import { limparSessao } from './sessao';
+
 const URL_API = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 export class ErroApi extends Error {
@@ -53,6 +55,15 @@ export async function requisitar(caminho, opcoes = {}) {
         const mensagem =
             (dados && (dados.erro || dados.mensagem)) ||
             'Não foi possível concluir a operação.';
+
+        if (resposta.status === 401) {
+            limparSessao();
+
+            if (window.location.pathname !== '/Entrar') {
+                window.location.replace('/Entrar');
+            }
+        }
+
         throw new ErroApi(mensagem, resposta.status, dados);
     }
 

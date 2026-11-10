@@ -8,16 +8,16 @@ export async function buscarPorEmail(email) {
     return linhas[0];
 }
 
-export async function criarUsuario(usuario) {
-    const [resultado] = await con.query(
+export async function criarUsuario(usuario, conexao = con) {
+    const [resultado] = await conexao.query(
         'insert into usuarios (email, senha_hash, tipo) values (?, ?, ?)',
         [usuario.email, usuario.senhaHash, usuario.tipo]
     );
     return resultado.insertId;
 }
 
-export async function criarInstituicao(dados) {
-    const [resultado] = await con.query(`
+export async function criarInstituicao(dados, conexao = con) {
+    const [resultado] = await conexao.query(`
         insert into instituicoes13
         (usuario_id, nome, tipo_instituicao, outro_tipo, cnpj, descricao,
          responsavel, telefone, cep, estado, rua, numero, complemento, bairro,
@@ -33,8 +33,8 @@ export async function criarInstituicao(dados) {
     return resultado.insertId;
 }
 
-export async function criarEstabelecimento(dados) {
-    const [resultado] = await con.query(`
+export async function criarEstabelecimento(dados, conexao = con) {
+    const [resultado] = await conexao.query(`
         insert into estabelecimentos13
         (usuario_id, nome, tipo_estabelecimento, outro_tipo, cnpj, telefone, cep,
          rua, numero, complemento, bairro, cidade, estado, responsavel,

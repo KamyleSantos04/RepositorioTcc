@@ -1,10 +1,12 @@
 import { con } from '../database.js';
 
 export async function buscarEstabelecimentoPorId(id) {
-    const [linhas] = await con.query(
-        'select * from estabelecimentos13 where id = ?',
-        [id]
-    );
+    const [linhas] = await con.query(`
+        select e.*, u.email
+          from estabelecimentos13 e
+          join usuarios u on u.id = e.usuario_id
+         where e.id = ?
+    `, [id]);
     return linhas[0];
 }
 

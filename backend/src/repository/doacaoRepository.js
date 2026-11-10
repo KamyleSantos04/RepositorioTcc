@@ -74,13 +74,68 @@ export async function buscarDoacao(id) {
     return linhas[0];
 }
 
+const STATUS_COM_SOLICITACAO_ATIVA = ['ACEITA', 'CONCLUIDA'];
+
+/**
+ * Atualiza o status de uma doação do estabelecimento logado.
+ *
+ * Regra de negócio: uma doação que já foi destinada a uma instituição
+ * (solicitação aceita ou concluída) não pode voltar a ficar livremente
+ * disponível para outras instituições.
+ *
+ * Retorna:
+ *   1  -> atualizado
+ *   0  -> doação não encontrada para este estabelecimento
+ *  -1  -> alteração bloqueada pela regra de negócio
+ */
 export async function atualizarStatus(id, estabelecimentoId, status) {
-    const [resultado] = await con.query(`
-        update doacoes13
-           set status = ?
-         where id = ? and estabelecimento_id = ?
-    `, [status, id, estabelecimentoId]);
-    return resultado.affectedRows;
+    const conexao = await con.getConnection();
+
+    try {
+        await conexao.beginTransaction();
+
+        const [linhas] = await conexao.query(`
+            select id, status
+              from doacoes13
+             where id = ? and estabelecimento_id = ?
+             for update
+        `, [id, estabelecimentoId]);
+
+        const doacao = linhas[0];
+
+        if (!doacao) {
+            await conexao.rollback();
+            return 0;
+        }
+
+        if (status === 'DISPONIVEL' && doacao.status !== 'DISPONIVEL') {
+            const [vinculos] = await conexao.query(`
+                select count(*) as total
+                  from solicitacoes13
+                 where doacao_id = ?
+                   and status in (?, ?)
+            `, [id, ...STATUS_COM_SOLICITACAO_ATIVA]);
+
+            if (Number(vinculos[0].total) > 0) {
+                await conexao.rollback();
+                return -1;
+            }
+        }
+
+        await conexao.query(`
+            update doacoes13
+               set status = ?, atualizado_em = current_timestamp
+             where id = ? and estabelecimento_id = ?
+        `, [status, id, estabelecimentoId]);
+
+        await conexao.commit();
+        return 1;
+    } catch (erro) {
+        await conexao.rollback();
+        throw erro;
+    } finally {
+        conexao.release();
+    }
 }
 
 export async function removerDoacao(id, estabelecimentoId) {

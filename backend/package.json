@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/api.js",
-    "dev": "node --watch src/api.js"
+    "dev": "node --watch src/api.js",
+    "banco": "node src/scripts/criar-banco.js",
+    "schema": "node src/scripts/schema.js"
   },
   "keywords": [],
   "author": "",

@@ -1,5 +1,4 @@
 import './index.scss';
-import './index.scss';
 
 export default function Painel({ titulo, subtitulo, acoes, children }) {
     return (

@@ -1,11 +1,14 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../lib/api';
+import { salvarSessao } from '../../lib/sessao';
 import './index.scss';
 
 export default function Estabelecimento() {
-  const [mensagem, setMensagem] = useState('');
+  const [mensagem, setMensagem] = useState({ texto: '', tipo: 'erro' });
   const [outroTipo, setOutroTipo] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   const navegar = useNavigate();
 
   async function cadastrar(event) {
@@ -16,80 +19,34 @@ export default function Estabelecimento() {
     const dados = Object.fromEntries(formularioDados);
 
     if (dados.senha !== dados.confirmarSenha) {
-      setMensagem('As senhas não são iguais!');
+      setMensagem({ texto: 'As senhas não são iguais!', tipo: 'erro' });
       return;
     }
 
     delete dados.confirmarSenha;
+    setMensagem({ texto: '', tipo: 'erro' });
+    setEnviando(true);
 
     try {
-      const resposta = await fetch(
-        'http://localhost:3001/api/auth/cadastro/estabelecimento',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dados)
-        }
-      );
-
-      const resultado = await resposta.json();
-
-      if (!resposta.ok) {
-        throw new Error(
-          resultado.erro || 'Erro ao cadastrar estabelecimento.'
-        );
-      }
+      await api.cadastrarEstabelecimento(dados);
 
       // Faz login automaticamente após o cadastro
-      const respostaLogin = await fetch(
-        'http://localhost:3001/api/auth/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: dados.email,
-            senha: dados.senha
-          })
-        }
-      );
-
-      const login = await respostaLogin.json();
+      const login = await api.login(dados.email, dados.senha);
 
       if (
-        !respostaLogin.ok ||
         !login.token ||
         login.tipo !== 'ESTABELECIMENTO'
       ) {
-        setMensagem(
-          'Cadastro realizado! Entre com seu e-mail e senha para acessar sua conta.'
-        );
+        setMensagem({
+          texto:
+            'Cadastro realizado! Entre com seu e-mail e senha para acessar sua conta.',
+          tipo: 'sucesso'
+        });
         return;
       }
 
-      // Salva os dados que o dashboard utiliza
-      sessionStorage.setItem(
-        'tokenConectaAlimento',
-        login.token
-      );
-
-      sessionStorage.setItem(
-        'tipoContaConectaAlimento',
-        login.tipo
-      );
-
-      sessionStorage.setItem(
-        'perfilId',
-        login.perfilId
-      );
-
-      sessionStorage.setItem(
-        'nomeContaConectaAlimento',
-        login.nome || dados.nome
-      );
+      // Salva a sessão que o dashboard utiliza
+      salvarSessao({ ...login, nome: login.nome || dados.nome });
 
       formulario.reset();
       setOutroTipo(false);
@@ -99,9 +56,12 @@ export default function Estabelecimento() {
 
     } catch (erro) {
       console.error('Erro no cadastro:', erro);
-      setMensagem(
-        erro.message || 'Erro ao realizar cadastro.'
-      );
+      setMensagem({
+        texto: erro.message || 'Erro ao realizar cadastro.',
+        tipo: 'erro'
+      });
+    } finally {
+      setEnviando(false);
     }
   }
 
@@ -292,13 +252,16 @@ export default function Estabelecimento() {
             no Alimento que Conecta.
           </label>
 
-          <button type="submit">
-            Criar conta
+          <button type="submit" disabled={enviando}>
+            {enviando ? 'Criando conta...' : 'Criar conta'}
           </button>
 
-          {mensagem && (
-            <p className="mensagem-sucesso" role="status">
-              {mensagem}
+          {mensagem.texto && (
+            <p
+              className={`mensagem-sucesso mensagem-${mensagem.tipo}`}
+              role="status"
+            >
+              {mensagem.texto}
             </p>
           )}
         </form>

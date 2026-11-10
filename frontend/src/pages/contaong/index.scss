@@ -136,4 +136,10 @@
       font-size: 18px;
     }
   }
+}/* Mensagem de erro do cadastro.
+   Precisa vencer a regra "form p[role='status']" acima. */
+
+.cadastro-instituicao form p[role='status'].mensagem-erro {
+  background-color: #fce8e6;
+  color: #a12622 !important;
 }

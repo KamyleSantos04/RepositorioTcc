@@ -8,6 +8,59 @@ export async function criarSolicitacao(doacaoId, instituicaoId, mensagem = '') {
     return resultado.insertId;
 }
 
+/**
+ * Cria uma solicitação sem deixar espaço para uma corrida entre a checagem da
+ * disponibilidade e o insert. A doação é bloqueada durante a operação; ela
+ * continua disponível enquanto as solicitações estiverem pendentes, mas deixa
+ * de estar disponível assim que o estabelecimento aceitar uma delas.
+ */
+export async function criarSolicitacaoAtomica(doacaoId, instituicaoId, mensagem = '') {
+    const conexao = await con.getConnection();
+
+    try {
+        await conexao.beginTransaction();
+
+        const [doacoes] = await conexao.query(`
+            select id
+              from doacoes13
+             where id = ? and status = 'DISPONIVEL'
+             for update
+        `, [doacaoId]);
+
+        if (!doacoes[0]) {
+            await conexao.rollback();
+            return { motivo: 'INDISPONIVEL' };
+        }
+
+        const [existentes] = await conexao.query(`
+            select id
+              from solicitacoes13
+             where doacao_id = ?
+               and instituicao_id = ?
+               and status in ('PENDENTE', 'ACEITA')
+             for update
+        `, [doacaoId, instituicaoId]);
+
+        if (existentes[0]) {
+            await conexao.rollback();
+            return { motivo: 'DUPLICADA' };
+        }
+
+        const [resultado] = await conexao.query(`
+            insert into solicitacoes13 (doacao_id, instituicao_id, mensagem, status)
+            values (?, ?, ?, 'PENDENTE')
+        `, [doacaoId, instituicaoId, mensagem || null]);
+
+        await conexao.commit();
+        return { id: resultado.insertId };
+    } catch (erro) {
+        await conexao.rollback();
+        throw erro;
+    } finally {
+        conexao.release();
+    }
+}
+
 export async function buscarSolicitacaoAberta(doacaoId, instituicaoId) {
     const [linhas] = await con.query(`
         select id
@@ -56,16 +109,26 @@ export async function atualizarStatus(id, estabelecimentoId, status) {
         await conexao.beginTransaction();
 
         const [linhas] = await conexao.query(`
-            select s.id, s.doacao_id
+            select s.id, s.doacao_id, s.status as status_solicitacao,
+                   d.status as status_doacao
               from solicitacoes13 s
               join doacoes13 d on d.id = s.doacao_id
              where s.id = ? and d.estabelecimento_id = ?
+             for update
         `, [id, estabelecimentoId]);
 
         const solicitacao = linhas[0];
         if (!solicitacao) {
             await conexao.rollback();
             return 0;
+        }
+
+        if (
+            solicitacao.status_solicitacao !== 'PENDENTE' ||
+            (status === 'ACEITA' && solicitacao.status_doacao !== 'DISPONIVEL')
+        ) {
+            await conexao.rollback();
+            return -1;
         }
 
         await conexao.query(`
@@ -151,9 +214,14 @@ export async function concluirSolicitacao(id, instituicaoId) {
         await conexao.beginTransaction();
 
         const [linhas] = await conexao.query(`
-            select id, doacao_id
-              from solicitacoes13
-             where id = ? and instituicao_id = ? and status = 'ACEITA'
+            select s.id, s.doacao_id
+              from solicitacoes13 s
+              join doacoes13 d on d.id = s.doacao_id
+             where s.id = ?
+               and s.instituicao_id = ?
+               and s.status = 'ACEITA'
+               and d.status = 'RESERVADA'
+             for update
         `, [id, instituicaoId]);
 
         const solicitacao = linhas[0];

@@ -1,11 +1,14 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../lib/api';
+import { salvarSessao } from '../../lib/sessao';
 import './index.scss';
 
 export default function CadastroInstituicao() {
-  const [mensagem, setMensagem] = useState('');
+  const [mensagem, setMensagem] = useState({ texto: '', tipo: 'erro' });
   const [outroTipo, setOutroTipo] = useState(false);
+  const [enviando, setEnviando] = useState(false);
   const navegar = useNavigate();
 
   async function cadastrar(event) {
@@ -16,76 +19,31 @@ export default function CadastroInstituicao() {
     const dados = Object.fromEntries(formularioDados);
 
     if (dados.senha !== dados.confirmarSenha) {
-      setMensagem('As senhas não são iguais!');
+      setMensagem({ texto: 'As senhas não são iguais!', tipo: 'erro' });
       return;
     }
 
     delete dados.confirmarSenha;
+    setMensagem({ texto: '', tipo: 'erro' });
+    setEnviando(true);
 
     try {
-      const resposta = await fetch(
-        'http://localhost:3001/api/auth/cadastro/ong',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dados)
-        }
-      );
-
-      const resultado = await resposta.json();
-
-      if (!resposta.ok) {
-        throw new Error(
-          resultado.erro || 'Erro ao cadastrar instituição.'
-        );
-      }
+      await api.cadastrarOng(dados);
 
       // Faz login automaticamente após o cadastro
-      const respostaLogin = await fetch(
-        'http://localhost:3001/api/auth/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: dados.email,
-            senha: dados.senha
-          })
-        }
-      );
+      const login = await api.login(dados.email, dados.senha);
 
-      const login = await respostaLogin.json();
-
-      if (!respostaLogin.ok || !login.token || login.tipo !== 'ONG') {
-        setMensagem(
-          'Cadastro realizado! Entre com seu e-mail e senha para acessar sua conta.'
-        );
+      if (!login.token || login.tipo !== 'ONG') {
+        setMensagem({
+          texto:
+            'Cadastro realizado! Entre com seu e-mail e senha para acessar sua conta.',
+          tipo: 'sucesso'
+        });
         return;
       }
 
-      // Salva os dados que o dashboard utiliza
-      sessionStorage.setItem(
-        'tokenConectaAlimento',
-        login.token
-      );
-
-      sessionStorage.setItem(
-        'tipoContaConectaAlimento',
-        login.tipo
-      );
-
-      sessionStorage.setItem(
-        'perfilId',
-        login.perfilId
-      );
-
-      sessionStorage.setItem(
-        'nomeContaConectaAlimento',
-        login.nome || dados.nome
-      );
+      // Salva a sessão que o dashboard utiliza
+      salvarSessao({ ...login, nome: login.nome || dados.nome });
 
       formulario.reset();
       setOutroTipo(false);
@@ -95,9 +53,12 @@ export default function CadastroInstituicao() {
 
     } catch (erro) {
       console.error('Erro no cadastro:', erro);
-      setMensagem(
-        erro.message || 'Erro ao realizar cadastro.'
-      );
+      setMensagem({
+        texto: erro.message || 'Erro ao realizar cadastro.',
+        tipo: 'erro'
+      });
+    } finally {
+      setEnviando(false);
     }
   }
 
@@ -308,13 +269,16 @@ export default function CadastroInstituicao() {
             required
           />
 
-          <button type="submit">
-            Cadastrar instituição
+          <button type="submit" disabled={enviando}>
+            {enviando ? 'Cadastrando...' : 'Cadastrar instituição'}
           </button>
 
-          {mensagem && (
-            <p className="mensagem-sucesso" role="status">
-              {mensagem}
+          {mensagem.texto && (
+            <p
+              className={`mensagem-sucesso mensagem-${mensagem.tipo}`}
+              role="status"
+            >
+              {mensagem.texto}
             </p>
           )}
         </form>

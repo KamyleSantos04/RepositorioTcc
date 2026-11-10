@@ -1,4 +1,6 @@
-export default function Aviso({ tipo, children }) {
+import './index.scss';
+
+export default function Aviso({ tipo = 'erro', children }) {
     if (!children) {
         return null;
     }

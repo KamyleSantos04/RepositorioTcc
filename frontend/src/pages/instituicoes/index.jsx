@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { api } from '../../lib/api';
 import './index.scss';
 
 export default function Instituicoes() {
@@ -12,22 +13,10 @@ export default function Instituicoes() {
     useEffect(() => {
         async function carregarInstituicoes() {
             try {
-                const resposta = await fetch(
-                    'http://localhost:3001/api/instituicoes'
-                );
-
-                if (!resposta.ok) {
-                    throw new Error('Não foi possível carregar as instituições.');
-                }
-
-                const dados = await resposta.json();
-
-                setInstituicoes(
-                    Array.isArray(dados) ? dados : dados.instituicoes || []
-                );
-            } catch (erro) {
-                console.error(erro);
-                setErro('Não foi possível carregar as instituições.');
+                const dados = await api.listarInstituicoes();
+                setInstituicoes(Array.isArray(dados) ? dados : []);
+            } catch (falha) {
+                setErro(falha.message);
             } finally {
                 setCarregando(false);
             }

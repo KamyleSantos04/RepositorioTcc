@@ -1,50 +1,120 @@
-import './index.scss';
+import { useMemo, useState } from 'react';
+import LayoutDashboard from '../../components/layout-dashboard';
+import CartaoSolicitacao from '../../components/cartao-solicitacao';
+import Aviso from '../../components/aviso';
+import EstadoVazio from '../../components/estado-vazio';
+import { api } from '../../lib/api';
+import { TIPO_ESTABELECIMENTO } from '../../lib/sessao';
+import useProtecao from '../../hooks/useProtecao';
+import useRequisicao from '../../hooks/useRequisicao';
+
+const LISTA_VAZIA = [];
 
 export default function Solicitacoes() {
-  return (
-    <div className="pagina">
-      <aside className="menu">
-        <img src="/assets/images/logo.png" alt="Logo" className="logo" />
+    const sessao = useProtecao(TIPO_ESTABELECIMENTO);
+    const { dados, carregando, erro, recarregar, definirErro } = useRequisicao(
+        () => api.solicitacoesRecebidas(),
+        [],
+        Boolean(sessao)
+    );
+    const [sucesso, setSucesso] = useState('');
+    const [respondendo, setRespondendo] = useState(null);
 
-        <a href="/dashboard">Início</a>
-        <a href="/minhas-doacoes">Minhas doações</a>
-        <a href="/solicitacoes">Solicitações</a>
-        <a href="/historico">Histórico</a>
-        <a href="/meus-estabelecimentos">Meus estabelecimentos</a>
-        <a href="/configuracao">Configuração</a>
-        <a href="/login" className="sair">Sair</a>
-      </aside>
+    const solicitacoes = dados || LISTA_VAZIA;
+    const pendentes = useMemo(
+        () => solicitacoes.filter((item) => item.status === 'PENDENTE'),
+        [solicitacoes]
+    );
+    const respondidas = useMemo(
+        () => solicitacoes.filter((item) => item.status !== 'PENDENTE'),
+        [solicitacoes]
+    );
 
-      <main className="conteudo">
-        <h1>Solicitações</h1>
-        <p>Veja as instituições interessadas nas suas doações.</p>
+    if (!sessao) return null;
 
-        <div className="lista">
-          <div className="card">
-            <h2>ONG Esperança</h2>
-            <p>Alimento solicitado: Pães franceses</p>
-            <p>Quantidade: 20 unidades</p>
-            <span className="status solicitada">Aguardando confirmação</span>
+    async function responder(solicitacao, status) {
+        setRespondendo(`${solicitacao.id}-${status}`);
+        setSucesso('');
+        definirErro('');
 
-            <div className="botoes">
-              <button className="botao">Confirmar</button>
-              <button className="botao secundario">Recusar</button>
-            </div>
-          </div>
+        try {
+            await api.responderSolicitacao(solicitacao.id, status);
+            setSucesso(
+                status === 'ACEITA'
+                    ? `Solicitação de ${solicitacao.instituicao} aceita. A doação está reservada.`
+                    : `Solicitação de ${solicitacao.instituicao} recusada.`
+            );
+            await recarregar();
+        } catch (falha) {
+            definirErro(falha.message);
+        } finally {
+            setRespondendo(null);
+        }
+    }
 
-          <div className="card">
-            <h2>Instituição Vida Nova</h2>
-            <p>Alimento solicitado: Frutas variadas</p>
-            <p>Quantidade: 10 kg</p>
-            <span className="status ativa">Solicitação recebida</span>
+    return (
+        <LayoutDashboard tipo={TIPO_ESTABELECIMENTO}>
+            <header className="dash-cabecalho">
+                <div>
+                    <h1>Solicitações</h1>
+                    <p>Analise os pedidos enviados pelas instituições para suas doações.</p>
+                </div>
+                <button className="dash-botao dash-botao-claro" type="button" onClick={recarregar} disabled={carregando}>Atualizar</button>
+            </header>
 
-            <div className="botoes">
-              <button className="botao">Confirmar</button>
-              <button className="botao secundario">Recusar</button>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
+            <Aviso tipo="erro">{erro}</Aviso>
+            <Aviso tipo="sucesso">{sucesso}</Aviso>
+
+            {carregando ? (
+                <p className="dash-carregando">Carregando solicitações…</p>
+            ) : (
+                <>
+                    <section className="dash-painel">
+                        <div className="dash-painel-topo"><h2>Pendentes ({pendentes.length})</h2></div>
+                        {pendentes.length === 0 ? (
+                            <EstadoVazio titulo="Nenhuma solicitação pendente" descricao="Novos pedidos de instituições aparecerão aqui." />
+                        ) : (
+                            <div className="dash-grade-cards">
+                                {pendentes.map((solicitacao) => (
+                                    <CartaoSolicitacao
+                                        key={solicitacao.id}
+                                        solicitacao={solicitacao}
+                                        acoes={
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="dash-botao dash-botao-pequeno"
+                                                    onClick={() => responder(solicitacao, 'ACEITA')}
+                                                    disabled={Boolean(respondendo)}
+                                                >
+                                                    {respondendo === `${solicitacao.id}-ACEITA` ? 'Aceitando…' : 'Aceitar'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="dash-botao dash-botao-secundario dash-botao-pequeno"
+                                                    onClick={() => responder(solicitacao, 'RECUSADA')}
+                                                    disabled={Boolean(respondendo)}
+                                                >
+                                                    {respondendo === `${solicitacao.id}-RECUSADA` ? 'Recusando…' : 'Recusar'}
+                                                </button>
+                                            </>
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                    {respondidas.length > 0 && (
+                        <section className="dash-painel">
+                            <div className="dash-painel-topo"><h2>Respondidas recentemente</h2></div>
+                            <div className="dash-grade-cards">
+                                {respondidas.map((solicitacao) => <CartaoSolicitacao key={solicitacao.id} solicitacao={solicitacao} />)}
+                            </div>
+                        </section>
+                    )}
+                </>
+            )}
+        </LayoutDashboard>
+    );
 }
