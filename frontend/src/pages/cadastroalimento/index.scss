@@ -1,12 +1,74 @@
+.cadastro-alimento-voltar {
+    display: inline-flex;
+    margin-bottom: 12px;
+    color: #315c42;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+        color: #c44b30;
+    }
+}
+
+.cadastro-alimento-cabecalho {
+    margin-bottom: 20px;
+}
+
+.cadastro-alimento-sobrancelha {
+    display: block;
+    margin: 0 0 6px;
+    color: #bd573e;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.cadastro-alimento-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(245px, 0.7fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.cadastro-alimento-formulario {
+    margin-bottom: 0;
+}
+
 .cadastro-alimento-dica {
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 24px;
+    min-height: 100%;
+    overflow: hidden;
+    background: linear-gradient(145deg, #fff8e9, #f4e5bd);
 
     h2 {
-        margin: 0 0 16px;
+        margin: 0;
         font-size: 18px;
         font-weight: 700;
         color: #244631;
+    }
+}
+
+.cadastro-alimento-dica-topo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+
+    > span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #e4a51b;
+        color: #fff;
+        font-weight: 900;
     }
 }
 
@@ -66,5 +128,23 @@
         &:hover {
             text-decoration: underline;
         }
+    }
+}
+
+.cadastro-alimento-ilustracao {
+    width: min(190px, 80%);
+    height: auto;
+    margin: 26px auto -10px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+}
+
+@media (max-width: 900px) {
+    .cadastro-alimento-grade {
+        grid-template-columns: 1fr;
+    }
+
+    .cadastro-alimento-dica {
+        position: static;
     }
 }

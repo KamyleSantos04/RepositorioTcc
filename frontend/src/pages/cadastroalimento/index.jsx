@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Painel from '../../components/painel';
+import { Link } from 'react-router-dom';
+import LayoutDashboard from '../../components/layout-dashboard';
 import Aviso from '../../components/aviso';
 import { api } from '../../lib/api';
 import { TIPO_ESTABELECIMENTO } from '../../lib/sessao';
@@ -44,7 +44,6 @@ const FORMULARIO_INICIAL = {
 export default function CadastrarAlimento() {
     const sessao = useProtecao(TIPO_ESTABELECIMENTO);
 
-    const navegar = useNavigate();
     const [dados, setDados] = useState(FORMULARIO_INICIAL);
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
@@ -93,24 +92,30 @@ export default function CadastrarAlimento() {
     if (!sessao) return null;
 
     return (
-        <Painel
-            titulo="Cadastrar alimento"
-            subtitulo="Publique o excedente do seu estabelecimento e conecte-o a uma instituição que precisa."
-            acoes={
-                <Link to="/MinhasDoacoes" className="botao botao-claro">
+        <LayoutDashboard tipo={TIPO_ESTABELECIMENTO}>
+            <Link to="/DashEstabelecimento" className="cadastro-alimento-voltar">
+                ← Voltar ao painel
+            </Link>
+            <header className="dash-cabecalho cadastro-alimento-cabecalho">
+                <div>
+                    <span className="cadastro-alimento-sobrancelha">Nova publicação</span>
+                    <h1>Cadastrar alimento</h1>
+                    <p>Informe o excedente disponível. Assim que publicar, as instituições poderão encontrá-lo em tempo real.</p>
+                </div>
+                <Link to="/MinhasDoacoes" className="dash-botao dash-botao-claro">
                     Minhas doações
                 </Link>
-            }
-        >
+            </header>
+
             <Aviso tipo="erro">{erro}</Aviso>
             <Aviso tipo="sucesso">{sucesso}</Aviso>
 
-            <section className="grade-duas">
-                <div className="cartao">
-                    <form className="formulario" onSubmit={publicar} noValidate={false}>
-                        <div className="formulario-grade">
-                            <div className="campo campo-largo">
-                                <label htmlFor="nomeAlimento">Alimento *</label>
+            <section className="cadastro-alimento-grade">
+                <div className="dash-painel cadastro-alimento-formulario">
+                    <form className="dash-form" onSubmit={publicar}>
+                        <div className="dash-form-grade">
+                            <div className="dash-campo dash-campo-largo">
+                                <label htmlFor="nomeAlimento">Descrição do alimento *</label>
                                 <input
                                     id="nomeAlimento"
                                     name="nomeAlimento"
@@ -123,8 +128,8 @@ export default function CadastrarAlimento() {
                                 />
                             </div>
 
-                            <div className="campo">
-                                <label htmlFor="categoria">Categoria</label>
+                            <div className="dash-campo">
+                                <label htmlFor="categoria">Tipo de alimento</label>
                                 <select
                                     id="categoria"
                                     name="categoria"
@@ -140,7 +145,7 @@ export default function CadastrarAlimento() {
                                 </select>
                             </div>
 
-                            <div className="campo">
+                            <div className="dash-campo">
                                 <label htmlFor="unidade">Unidade *</label>
                                 <select
                                     id="unidade"
@@ -158,7 +163,7 @@ export default function CadastrarAlimento() {
                                 </select>
                             </div>
 
-                            <div className="campo">
+                            <div className="dash-campo">
                                 <label htmlFor="quantidade">Quantidade *</label>
                                 <input
                                     id="quantidade"
@@ -173,7 +178,7 @@ export default function CadastrarAlimento() {
                                 />
                             </div>
 
-                            <div className="campo">
+                            <div className="dash-campo">
                                 <label htmlFor="validade">Validade</label>
                                 <input
                                     id="validade"
@@ -184,7 +189,7 @@ export default function CadastrarAlimento() {
                                 />
                             </div>
 
-                            <div className="campo">
+                            <div className="dash-campo">
                                 <label htmlFor="retiradaAte">
                                     Retirada até
                                 </label>
@@ -195,12 +200,12 @@ export default function CadastrarAlimento() {
                                     value={dados.retiradaAte}
                                     onChange={alterar}
                                 />
-                                <span className="campo-ajuda">
+                                <span className="dash-ajuda">
                                     Data e horário limite para a instituição buscar.
                                 </span>
                             </div>
 
-                            <div className="campo campo-largo">
+                            <div className="dash-campo dash-campo-largo">
                                 <label htmlFor="enderecoRetirada">
                                     Local de retirada *
                                 </label>
@@ -216,7 +221,7 @@ export default function CadastrarAlimento() {
                                 />
                             </div>
 
-                            <div className="campo campo-largo">
+                            <div className="dash-campo dash-campo-largo">
                                 <label htmlFor="observacoes">Observações</label>
                                 <textarea
                                     id="observacoes"
@@ -228,10 +233,10 @@ export default function CadastrarAlimento() {
                             </div>
                         </div>
 
-                        <div className="acoes-formulario">
+                        <div className="dash-acoes">
                             <button
                                 type="submit"
-                                className="botao botao-principal"
+                                className="dash-botao"
                                 disabled={enviando}
                             >
                                 {enviando ? 'Publicando…' : 'Publicar doação'}
@@ -239,26 +244,28 @@ export default function CadastrarAlimento() {
 
                             <button
                                 type="button"
-                                className="botao botao-secundario"
+                                className="dash-botao dash-botao-secundario"
                                 onClick={limpar}
                                 disabled={enviando}
                             >
                                 Limpar
                             </button>
 
-                            <button
-                                type="button"
-                                className="botao botao-claro"
-                                onClick={() => navegar('/MinhasDoacoes')}
-                            >
+                            <Link to="/MinhasDoacoes" className="dash-botao dash-botao-claro">
                                 Ver minhas doações
-                            </button>
+                            </Link>
                         </div>
                     </form>
                 </div>
 
-                <aside className="cartao cadastro-alimento-dica">
-                    <h2>Antes de publicar</h2>
+                <aside className="dash-painel cadastro-alimento-dica">
+                    <div className="cadastro-alimento-dica-topo">
+                        <span aria-hidden="true">!</span>
+                        <div>
+                            <p className="cadastro-alimento-sobrancelha">Dica</p>
+                            <h2>Publique com clareza</h2>
+                        </div>
+                    </div>
 
                     <ul className="cadastro-alimento-lista">
                         <li>
@@ -286,8 +293,13 @@ export default function CadastrarAlimento() {
                             alterar o status ou remover o registro.
                         </p>
                     </div>
+                    <img
+                        className="cadastro-alimento-ilustracao"
+                        src="/assets/images/maca.png"
+                        alt=""
+                    />
                 </aside>
             </section>
-        </Painel>
+        </LayoutDashboard>
     );
 }
