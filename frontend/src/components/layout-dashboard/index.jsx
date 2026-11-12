@@ -37,7 +37,7 @@ const ITENS_ESTABELECIMENTO = [
     {
         para: '/PerfilEstabelecimento',
         rotulo: 'Perfil',
-        icone: '/assets/icons/users.png'
+        icone: '/assets/icons/perfil.png'
     },
     {
         para: '/Configuracao',
@@ -66,7 +66,7 @@ const ITENS_ONG = [
     {
         para: '/DashONG/Recebimentos',
         rotulo: 'Recebimentos',
-        icone: '/assets/icons/colunas.png'
+        icone: '/assets/icons/inbox.png'
     },
     {
         para: '/DashONG/Historico',
@@ -76,14 +76,14 @@ const ITENS_ONG = [
     {
         para: '/DashONG/Perfil',
         rotulo: 'Perfil',
-        icone: '/assets/icons/users.png'
+        icone: '/assets/icons/perfil.png'
     }
 ];
 
 function Logo({ classe }) {
     return (
         <Link to="/" className={classe} title="Página inicial do site">
-            <img src="/assets/images/logo.png" alt="Conecta-Alimento" />
+            <img src="/assets/images/logobranca.png" alt="Conecta-Alimento" />
         </Link>
     );
 }
@@ -102,7 +102,7 @@ function BotaoSair({ classe }) {
                 src="/assets/icons/arrow-right-from-bracket-solid.png"
                 alt=""
             />
-            <span>Sair</span>
+            <Link to='/'><span>Sair</span></Link>
         </button>
     );
 }
@@ -138,13 +138,6 @@ function NavegacaoLateral({ tipo }) {
     );
 }
 
-/**
- * Estrutura comum dos dashboards.
- *
- * Os dois tipos de conta usam a mesma navegação lateral, com links e
- * permissões próprios. Isso mantém a identidade visual consistente e evita
- * duplicar menus entre as páginas.
- */
 export default function LayoutDashboard({ tipo, children }) {
     return (
         <div className="dash">

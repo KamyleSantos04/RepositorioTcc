@@ -1,98 +1,238 @@
-.entrar{
+.pagina-entrar {
     font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 20px 0;
     display: flex;
-    align-items: center;
-    border-radius: 15px;
     flex-direction: column;
-    text-align: justify;
-    background-color: #EBE3D4;
-    height: 530px;
-    width: 575px;
-    margin-top: 20px;
-    margin-left: 355px;
+    align-items: center;
 
-    .bemvindo p{
-        color: #5A7857;
-    }
-    .bemvindo{
-margin-right: 80px;
-
-    }
-     input{
-        border: 2px solid #D8E2D0;
-        border-radius: 5px;
-        padding: 4px;
-        
-     }
-
-     select{
-        border: 2px solid #cfd1cd;
-        border-radius: 5px;
-        padding: 4px;
-        color: #76816E;
-     }
-
-     .ou{
-        color: #5A7857;
-        margin-left: 50px;
-     }
-
-     .botaodois{
-        border: 1px solid #496147;
-        border-radius: 3px;
-        width: 109px;
-        height: 28px;
-        padding: 5px;
-        color: #2F4F37;
-         cursor: pointer;
-     }
-
-.logu{
-margin-right: 30px;
-
-}
-     .hola{
-display: flex;
-align-items: center;
-
-     }
-
-     .botaoum{
-        background-color: #C44B30;
-        border: none;
-        border-radius: 3px;
-        width: 109px;
-        height: 28px;
-        color: white;
-        padding: 5px;
-         cursor: pointer;
-     }
-    .email h2{
-        color: #5A7857;
-        font-size: 25px;
-    }
-
-    .esque{
-        color: #5A7857;
+    .voltar-inicio {
+        width: min(90%, 860px);
+        box-sizing: border-box;
+        color: #315C42;
+        font-size: 20px;
+        text-decoration: none;
         font-weight: bold;
-        font-size: 15px;
-        cursor: pointer;
+        margin-bottom: 15px;
+        margin-right:270px;
+
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
 
-    .senha h2{
-        color: #5A7857;
-        font-size: 25px;
-    }
+    .entrar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: left;
+        box-sizing: border-box;
 
-    .conta h2{
-        color: #5A7857;
-        font-size: 25px;
-    }
+        background-color: #EBE3D4;
+        border-radius: 22px;
 
-    .mano{
-        margin-top: 20px;
-        margin-right: 310px;
-    }
+        width: min(90%, 860px);
+        min-height: 700px;
+        height: auto;
 
-    
+        margin: 0 auto;
+        padding: 28px 45px;
+
+        .hola {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 35px;
+            width: 100%;
+            margin-bottom: 35px;
+        }
+
+        .logu {
+            width: 180px;
+            height: auto;
+            object-fit: contain;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .bemvindo {
+            flex: 1;
+            min-width: 0;
+            margin: 0;
+
+            h1 {
+                color: #000;
+                font-size: 38px;
+                margin: 0 0 15px;
+            }
+
+            p {
+                color: #5A7857;
+                font-size: 22px;
+                margin: 0;
+            }
+        }
+
+        .mano {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        .email,
+        .senha,
+        .conta {
+            width: 100%;
+            margin-bottom: 20px;
+
+            h2 {
+                color: #5A7857;
+                font-size: 25px;
+                margin: 0 0 12px;
+            }
+        }
+
+        input {
+            box-sizing: border-box;
+            width: 260px;
+            max-width: 100%;
+            border: 2px solid #D8E2D0;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        select {
+            box-sizing: border-box;
+            width: 268px;
+            max-width: 100%;
+            border: 2px solid #cfd1cd;
+            border-radius: 6px;
+            padding: 8px;
+            color: #76816E;
+            background-color: white;
+            font-size: 16px;
+        }
+
+        .esque {
+            color: #5A7857;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            margin: 0 0 20px;
+        }
+
+        .acoes-login {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .botaoum,
+        .botaodois {
+            box-sizing: border-box;
+            width: 164px;
+            height: 42px;
+            margin: 0;
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .botaoum {
+            background-color: #C44B30;
+            border: none;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .link-criar {
+            display: inline-block;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .botaodois {
+            background-color: white;
+            border: 1px solid #496147;
+            color: #2F4F37;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    .pagina-entrar {
+        padding: 15px 0;
+
+        .voltar-inicio {
+            width: 94%;
+        }
+
+        .entrar {
+            width: 94%;
+            min-height: auto;
+            padding: 24px;
+            margin: 0 auto;
+
+            .hola {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+
+            .logu {
+                width: 130px;
+            }
+
+            .bemvindo h1 {
+                font-size: 28px;
+            }
+
+            .bemvindo p {
+                font-size: 18px;
+            }
+
+            .email h2,
+            .senha h2,
+            .conta h2 {
+                font-size: 22px;
+            }
+
+            .mano {
+                width: 100%;
+            }
+
+            input,
+            select {
+                width: 100%;
+            }
+
+            .acoes-login {
+                gap: 10px;
+            }
+
+            .botaoum,
+            .botaodois {
+                width: 100%;
+                max-width: 164px;
+            }
+        }
+    }
 }

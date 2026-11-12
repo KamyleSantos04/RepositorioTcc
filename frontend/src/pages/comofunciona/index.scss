@@ -1,18 +1,244 @@
 
-.saudacao{
-display: flex;
-background-color: rgb(3, 211, 65);
-padding: 15px;
+.como-funciona {
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    padding: 0 0 70px;
+    font-family: Arial, Helvetica, sans-serif;
+
+    .cabecalho-como-funciona {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: 140px;
+        box-sizing: border-box;
+        padding: 15px 7%;
+        background-color:#EBE3D4;
+
+        .logo-conecta {
+            display: flex;
+            align-items: center;
+
+            img {
+                width: 150px;
+                height: auto;
+                object-fit: contain;
+            }
+        }
+
+        .voltar-como-funciona {
+            color: #315c42;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: #244631;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .titulo-secao {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 50px;
+        padding: 55px 20px 0;
+
+        h1 {
+            color: #315c42;
+            font-size: 36px;
+            margin: 0 0 18px;
+        }
+
+        .descricao {
+            color: #5d665d;
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0;
+        }
+    }
+
+    .etapas {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 25px;
+        max-width: 1150px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .card-etapa {
+        position: relative;
+        box-sizing: border-box;
+        padding: 35px 25px;
+        min-height: 290px;
+        background-color: #E3EBDD;
+        border: 1px solid #dce5d8;
+        border-radius: 18px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        &:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(49, 92, 66, 0.12);
+        }
+
+        .numero {
+            position: absolute;
+            top: 15px;
+            left: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: #315c42;
+            color: #fffdf8;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .icone-etapa {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 75px;
+            height: 75px;
+            margin: 15px auto 22px;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        }
+
+        h2 {
+            color: #315c42;
+            font-size: 22px;
+            margin: 0 0 15px;
+        }
+
+        p {
+            color: #60695f;
+            font-size: 15px;
+            line-height: 1.7;
+            margin: 0;
+        }
+    }
+
+    .chamada-final {
+        text-align: center;
+        margin: 55px auto 0;
+        max-width: 700px;
+        padding: 0 20px;
+
+        h2 {
+            color: #315c42;
+            font-size: 27px;
+            margin: 0 0 12px;
+        }
+
+        p {
+            color: #60695f;
+            font-size: 16px;
+            line-height: 1.7;
+            margin: 0 0 25px;
+        }
+
+        .botao-participar {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 8px;
+            background-color: #315c42;
+            color: #fffdf8;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: #244631;
+            }
+
+            span {
+                margin-left: 8px;
+            }
+        }
+    }
 }
-.alimento{
-color: rgb(255, 255, 255);
-font-size: 40px;
-text-decoration: underline;
 
+@media (max-width: 850px) {
+    .como-funciona {
+        .cabecalho-como-funciona {
+            padding: 15px 5%;
+        }
+
+        .etapas {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .titulo-secao h1 {
+            font-size: 30px;
+        }
+    }
 }
 
-.saudacao h1{
-margin-left: 30px;
+@media (max-width: 550px) {
+    .como-funciona {
+        padding-bottom: 40px;
 
+        .cabecalho-como-funciona {
+            min-height: 80px;
+            padding: 12px 20px;
 
+            .logo-conecta img {
+                width: 115px;
+            }
+
+            .voltar-como-funciona {
+                font-size: 14px;
+            }
+        }
+
+        .titulo-secao {
+            padding-top: 40px;
+            margin-bottom: 35px;
+
+            h1 {
+                font-size: 27px;
+            }
+
+            .descricao {
+                font-size: 16px;
+            }
+        }
+
+        .etapas {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .card-etapa {
+            min-height: auto;
+            padding: 35px 25px;
+
+            h2 {
+                font-size: 21px;
+            }
+        }
+
+        .chamada-final {
+            margin-top: 40px;
+
+            h2 {
+                font-size: 23px;
+            }
+        }
+    }
 }

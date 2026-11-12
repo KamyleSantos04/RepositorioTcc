@@ -10,13 +10,6 @@ import {
 export default function Inicio() {
   const navegar = useNavigate()
 
-  /**
-   * Botões "Quero doar" e "Preciso de alimentos".
-   *
-   * - Já autenticado com o tipo certo: vai direto para a página.
-   * - Sem sessão (ou sessão de outro tipo): vai para o login já com o
-   *   tipo de conta pré-selecionado e com o destino preservado.
-   */
   function escolher(origem) {
     const destino = rotaPorOrigem(origem)
     const sessao = lerSessao()
@@ -90,8 +83,21 @@ export default function Inicio() {
       </section>
 
       <div className='bege'>
-       <img src='./assets/images/bege.png' alt='' width={1300}></img>
-      </div>
+  <div className='item'>
+    <img src='./assets/images/folha.png' alt='' width={150} />
+    <p>Conecta estabelecimentos e instituições</p>
+  </div>
+
+  <div className='item'>
+    <img src='./assets/images/maca.png' alt='' width={150} />
+    <p>Combate a fome e o desperdício</p>
+  </div>
+
+  <div className='item'>
+    <img src='./assets/images/pessoas.png' alt='' width={150} />
+    <p>Fortalece a comunidade</p>
+  </div>
+</div>
 
     </div>
   );
