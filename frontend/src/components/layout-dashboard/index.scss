@@ -64,6 +64,7 @@
     flex-direction: column;
     gap: 10px;
     flex: 1;
+    text-decoration: none;
 }
 
 .dash-lateral-item,
@@ -96,6 +97,7 @@
         font-family: inherit;
         color: #fffdf8;
         line-height: 1.4;
+        text-decoration: none;
     }
 
     &:hover {

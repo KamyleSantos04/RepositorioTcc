@@ -8,6 +8,8 @@ import { TIPO_ONG } from '../../../lib/sessao';
 import useProtecao from '../../../hooks/useProtecao';
 import useRequisicao from '../../../hooks/useRequisicao';
 
+import './index.scss';
+
 const FILTROS = [
     { valor: 'TODAS', rotulo: 'Todas' },
     { valor: 'PENDENTE', rotulo: 'Aguardando resposta' },

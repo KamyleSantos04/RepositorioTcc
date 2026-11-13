@@ -50,8 +50,6 @@ root.render(
         <Route path="/MinhasDoacoes" element={<MinhasDoacoes />} />
         <Route path="/Solicitacoes" element={<Solicitacoes />} />
         <Route path="/Historico" element={<Historico />} />
-        <Route path="/PerfilEstabelecimento" element={<Perfil tipo={TIPO_ESTABELECIMENTO} />} />
-        <Route path="/MeusEstabelecimentos" element={<Perfil tipo={TIPO_ESTABELECIMENTO} />} />
         <Route path="/Configuracao" element={<Perfil tipo={TIPO_ESTABELECIMENTO} />} />
       </Routes>
     </BrowserRouter>

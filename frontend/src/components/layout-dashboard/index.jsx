@@ -30,16 +30,6 @@ const ITENS_ESTABELECIMENTO = [
         icone: '/assets/icons/historico.png'
     },
     {
-        para: '/MeusEstabelecimentos',
-        rotulo: 'Meus estabelecimentos',
-        icone: '/assets/icons/estabelecimento.png'
-    },
-    {
-        para: '/PerfilEstabelecimento',
-        rotulo: 'Perfil',
-        icone: '/assets/icons/perfil.png'
-    },
-    {
         para: '/Configuracao',
         rotulo: 'Configuração',
         icone: '/assets/icons/conf.png'
@@ -93,7 +83,7 @@ function BotaoSair({ classe }) {
 
     function sair() {
         limparSessao();
-        navegar('/Entrar', { replace: true });
+        navegar('/', { replace: true });
     }
 
     return (
@@ -102,7 +92,9 @@ function BotaoSair({ classe }) {
                 src="/assets/icons/arrow-right-from-bracket-solid.png"
                 alt=""
             />
-            <Link to='/'><span>Sair</span></Link>
+            <Link 
+            style={{ textDecoration: "none" }}
+            to='/'><span>Sair</span></Link>
         </button>
     );
 }
@@ -118,6 +110,7 @@ function NavegacaoLateral({ tipo }) {
             <nav className="dash-lateral-itens">
                 {itens.map((item) => (
                     <NavLink
+                    style={{ textDecoration: "none" }}
                         key={item.para}
                         to={item.para}
                         end={item.exato}
@@ -132,7 +125,8 @@ function NavegacaoLateral({ tipo }) {
                     </NavLink>
                 ))}
 
-                <BotaoSair classe="dash-lateral-sair" />
+                <BotaoSair 
+                classe="dash-lateral-sair" />
             </nav>
         </aside>
     );
